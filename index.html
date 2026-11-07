@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positivus - Figma Canvas Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandGreen: '#B9FF66',
+                        brandDark: '#191A23',
+                        brandGray: '#F3F3F3',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        <!-- ADVANCED FIGMA CANVAS INTERACTION SCRIPT --><script>function selectLayer(frameId) {
+            // 1. Clear previous selection styles from all frames
+            document.querySelectorAll('.figma-frame').forEach(frame=> {
+                frame.classList.remove('active-selection');
+            }
+            );
+            // 2. Clear previous selection styles from all sidebar buttons
+            document.querySelectorAll('.layer-item').forEach(btn=> {
+                btn.classList.remove('active-layer');
+            }
+            );
+            // 3. Highlight selected frame & sidebar item
+            const targetFrame=document.getElementById(frameId);
+            const targetBtn=document.getElementById('btn-' + frameId);
+            if (targetFrame) {
+                targetFrame.classList.add('active-selection');
+                // 4. Smooth horizontal scroll to bring the clicked frame into view center
+                targetFrame.scrollIntoView( {
+                    behavior: 'smooth', block: 'nearest', inline: 'center'
+                }
+                );
+            }
+            if (targetBtn) {
+                targetBtn.classList.add('active-layer');
+            }
+        }
+        
+        </script>body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #1E1E1E;
+        }
+        /* Figma Canvas Card Style */
+        
+        .figma-frame {
+            border: 2px solid #333333;
+            transition: all 0.2s ease-in-out;
+            background-color: #FFFFFF;
+            border-radius: 20px;
+        }
+        /* Blue Selection Border */
+        
+        .figma-frame.active-selection {
+            border: 3px solid #0D99FF !important;
+            box-shadow: 0 0 0 4px rgba(13, 153, 255, 0.3);
+        }
+        
+        .layer-item.active-layer {
+            background-color: #0D99FF;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<!-- ADVANCED FIGMA INTERACTION & ZOOM SCRIPT -->
+<script>
+    let currentZoom = 1;
+
+    // 1. Layer Click & Auto-Scroll Logic
+    function selectLayer(frameId) {
+        document.querySelectorAll('.figma-frame').forEach(frame => {
+            frame.classList.remove('active-selection');
+        });
+        document.querySelectorAll('.layer-item').forEach(btn => {
+            btn.classList.remove('active-layer');
+        });
+
+        const targetFrame = document.getElementById(frameId);
+        const targetBtn = document.getElementById('btn-' + frameId);
+
+        if (targetFrame) {
+            targetFrame.classList.add('active-selection');
+            targetFrame.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+
+        if (targetBtn) {
+            targetBtn.classList.add('active-layer');
+        }
+    }
+
+    // 2. Dynamic Zoom In / Out Buttons Logic
+    function zoomCanvas(step) {
+        const track = document.querySelector('#canvas-main > div');
+        currentZoom = Math.min(Math.max(0.4, currentZoom + step), 1.8); // Scale between 40% to 180%
+
+        if (track) {
+            track.style.transform = `scale(${currentZoom})`;
+            track.style.transformOrigin = 'top left';
+        }
+
+        document.getElementById('zoom-level').innerText = Math.round(currentZoom * 100) + '%';
+    }
+
+    // 3. Reset Zoom to Original Scale
+    function resetZoom() {
+        const track = document.querySelector('#canvas-main > div');
+        currentZoom = 1;
+        if (track) {
+            track.style.transform = 'scale(1)';
+        }
+        document.getElementById('zoom-level').innerText = '100%';
+    }
+</script>
+
+<body class="h-screen flex flex-col overflow-hidden text-brandDark">
+
+    <!-- TOP TOOLBAR -->
+    <header class="h-12 bg-[#2C2C2C] text-white flex items-center justify-between px-4 border-b border-gray-700 shrink-0">
+        <div class="flex items-center gap-3">
+            <span class="text-xs font-bold bg-[#0D99FF] px-2 py-1 rounded text-white font-mono">Figma</span>
+            <span class="text-sm font-semibold">Positivus Landing Page Design</span>
+        </div>
+        <div class="text-xs text-gray-400">
+            Multi-Frame Board View
+        </div>
+    </header>
+
+    <!-- DASHBOARD LAYOUT -->
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- LEFT SIDEBAR: LAYERS PANEL -->
+        <aside class="w-60 bg-[#252525] text-gray-300 border-r border-gray-700 flex flex-col shrink-0">
+            <div class="p-3 border-b border-gray-700">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400">LAYERS</h2>
+            </div>
+
+            <div class="overflow-y-auto p-2 space-y-1 text-sm font-sans">
+                <button onclick="selectLayer('frame-home')" id="btn-frame-home" class="layer-item active-layer w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Home 1
+        </button>
+                <button onclick="selectLayer('frame-style')" id="btn-frame-style" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Style Guide
+        </button>
+                <button onclick="selectLayer('frame-services')" id="btn-frame-services" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Services 1
+        </button>
+                <button onclick="selectLayer('frame-services-mob')" id="btn-frame-services-mob" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">T</span> Services mob
+        </button>
+                <button onclick="selectLayer('frame-case-studies')" id="btn-frame-case-studies" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Case studies 1
+        </button>
+                <button onclick="selectLayer('frame-process')" id="btn-frame-process" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Process block 1
+        </button>
+                <button onclick="selectLayer('frame-team')" id="btn-frame-team" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Team block 1
+        </button>
+                <button onclick="selectLayer('frame-testimonials')" id="btn-frame-testimonials" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Testimonials block 1
+        </button>
+                <button onclick="selectLayer('frame-about')" id="btn-frame-about" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> About us 1
+        </button>
+                <button onclick="selectLayer('frame-pricing')" id="btn-frame-pricing" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Pricing 1
+        </button>
+                <button onclick="selectLayer('frame-pricing-mob')" id="btn-frame-pricing-mob" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">T</span> Pricing mob
+        </button>
+                <button onclick="selectLayer('frame-blog')" id="btn-frame-blog" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">#</span> Blog 1
+        </button>
+                <button onclick="selectLayer('frame-blog-mob')" id="btn-frame-blog-mob" class="layer-item w-full text-left px-3 py-2 rounded-md flex items-center gap-2 transition hover:bg-gray-700">
+            <span class="text-xs opacity-60">T</span> Blog mob
+        </button>
+            </div>
+        </aside>
+
+        <!-- RIGHT SIDE: FIGMA CANVAS BOARD -->
+        <main class="flex-1 overflow-auto p-5 bg-[#1E1E1E] scroll-smooth" id="canvas-main">
+
+            <div class="flex gap-5 items-start w-max">
+
+                <!-- COLUMN 1: ALL VERTICAL LANDING PAGE BLOCKS -->
+                <div class="flex flex-col gap-6 w-80">
+
+                    <!-- FRAME 1: HOME 1 -->
+                    <div id="frame-home" onclick="selectLayer('frame-home')" class="figma-frame active-selection w-full p-4 cursor-pointer space-y-3">
+                        <div class="text-[11px] font-bold text-gray-400">Frame: Home 1</div>
+                        <h2 class="text-lg font-bold leading-tight">Navigating the digital landscape</h2>
+                        <p class="text-[11px] text-gray-500">Helping businesses grow online through SEO & PPC.</p>
+                        <div class="h-28 bg-brandGreen border border-brandDark rounded-xl flex items-center justify-center font-bold text-xs">
+                            [Hero Image]
+                        </div>
+                        <button class="w-full bg-brandDark text-white py-2 text-xs rounded-xl font-medium">Consultation</button>
+                    </div>
+                    <!-- FRAME: STYLE GUIDE -->
+                    <div id="frame-style" onclick="selectLayer('frame-style')" class="figma-frame w-96 p-5 cursor-pointer space-y-5 bg-white">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <div class="text-xs font-bold text-gray-400">Frame: Style</div>
+                            <span class="text-[10px] bg-brandDark text-white px-2 py-0.5 rounded font-mono">Style Guide</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <div>
+                                <span class="bg-brandGreen text-[10px] font-bold px-2 py-0.5 rounded border border-brandDark block">Typography</span>
+                                <p class="text-[8px] text-gray-500 mt-1">Desktop</p>
+                            </div>
+                            <div>
+                                <span class="bg-brandGreen text-[10px] font-bold px-2 py-0.5 rounded border border-brandDark block">Colors</span>
+                            </div>
+                            <div>
+                                <span class="bg-brandGreen text-[10px] font-bold px-2 py-0.5 rounded border border-brandDark block">Illustrations</span>
+                            </div>
+                        </div>
+
+                        <!-- TYPOGRAPHY & COLORS GRID -->
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div class="space-y-2 border-r pr-2">
+                                <div>
+                                    <span class="text-xs font-bold text-brandGreen">H1</span>
+                                    <span class="text-base font-bold text-brandDark ml-1">Positivus</span>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-brandGreen">H2</span>
+                                    <span class="text-sm font-bold text-brandDark ml-1">Positivus</span>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-brandGreen">H3</span>
+                                    <span class="text-xs font-bold text-brandDark ml-1">Positivus</span>
+                                </div>
+                                <div class="pt-2">
+                                    <span class="bg-brandGreen text-[9px] font-bold px-1.5 py-0.5 rounded border border-brandDark">Mobile Typo</span>
+                                    <p class="text-[10px] font-bold mt-1">H1 Positivus</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="bg-brandGreen p-2 rounded-lg border border-brandDark text-[9px] font-bold flex justify-between items-center">
+                                    <span>B9FF66</span>
+                                    <span class="w-3 h-3 rounded-full bg-white border border-brandDark"></span>
+                                </div>
+                                <div class="bg-brandDark text-white p-2 rounded-lg text-[9px] font-bold flex justify-between items-center">
+                                    <span>191A23</span>
+                                    <span class="w-3 h-3 rounded-full bg-brandGreen"></span>
+                                </div>
+                                <div class="bg-brandGray p-2 rounded-lg border border-brandDark text-[9px] font-bold flex justify-between items-center">
+                                    <span>F3F3F3</span>
+                                    <span class="w-3 h-3 rounded-full bg-brandDark"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-gray-200 space-y-2">
+                            <span class="text-[10px] font-bold text-gray-500 uppercase">Button Components</span>
+                            <div class="flex gap-2">
+                                <button class="bg-brandDark text-white text-[9px] px-3 py-1.5 rounded-lg border border-brandDark">Primary Button</button>
+                                <button class="bg-white text-brandDark text-[9px] px-3 py-1.5 rounded-lg border border-brandDark">Secondary</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- FRAME 2: SERVICES 1 -->
+                    <div id="frame-services" onclick="selectLayer('frame-services')" class="figma-frame w-full p-4 cursor-pointer space-y-3 bg-white">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <span class="text-[10px] font-bold text-gray-400">Frame: Services 1</span>
+                            <span class="text-[9px] bg-brandDark text-white px-1.5 py-0.5 rounded font-mono">Layer</span>
+                        </div>
+                        <span class="bg-brandGreen text-[11px] font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Services</span>
+                        <p class="text-[10px] text-gray-700 leading-snug">
+                            At our digital marketing agency, we offer a range of services to help businesses grow.
+                        </p>
+                    </div>
+
+                    <!-- FRAME 3: CASE STUDIES 1 -->
+                    <div id="frame-case-studies" onclick="selectLayer('frame-case-studies')" class="figma-frame w-full p-4 cursor-pointer space-y-3 bg-white">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <span class="text-[10px] font-bold text-gray-400">Frame: Case studies 1</span>
+                            <span class="text-[9px] bg-brandDark text-white px-1.5 py-0.5 rounded font-mono">Layer</span>
+                        </div>
+
+                        <!-- HEADER & SUBTITLE -->
+                        <div class="space-y-0.5">
+                            <span class="bg-brandGreen text-[11px] font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Case Studies</span>
+                            <p class="text-[8px] text-gray-600">Explore Real-Life Examples of Our Proven Digital Marketing Success through Our Case Studies</p>
+                        </div>
+
+                        <!-- 3-COLUMN DARK CARD LAYOUT -->
+                        <div class="bg-brandDark text-white p-3 rounded-2xl border border-brandDark grid grid-cols-3 gap-3 text-[7.5px]">
+                            <!-- COLUMN 1 -->
+                            <div class="space-y-2 pr-2 border-r border-gray-700">
+                                <p class="text-gray-300 leading-tight">
+                                    For a local restaurant, we implemented a targeted PPC campaign that resulted in a 50% increase in website traffic and a 25% increase in sales[cite: 4].
+                                </p>
+                                <a href="#" class="text-brandGreen font-bold flex items-center gap-0.5 hover:underline">
+                                    Learn more ↗
+                                </a>
+                            </div>
+
+                            <!-- COLUMN 2 -->
+                            <div class="space-y-2 px-1 border-r border-gray-700">
+                                <p class="text-gray-300 leading-tight">
+                                    For a B2B software company, we developed an SEO strategy that resulted in a first page ranking for key keywords and a 200% increase in organic traffic[cite: 4].
+                                </p>
+                                <a href="#" class="text-brandGreen font-bold flex items-center gap-0.5 hover:underline">
+                                    Learn more ↗
+                                </a>
+                            </div>
+
+                            <!-- COLUMN 3 -->
+                            <div class="space-y-2 pl-1">
+                                <p class="text-gray-300 leading-tight">
+                                    For a national retail chain, we created a social media marketing campaign that increased followers by 25% and generated a 20% increase in online sales[cite: 4].
+                                </p>
+                                <a href="#" class="text-brandGreen font-bold flex items-center gap-0.5 hover:underline">
+                                    Learn more ↗
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- FRAME 4: PROCESS BLOCK 1 -->
+                    <div id="frame-process" onclick="selectLayer('frame-process')" class="figma-frame w-full p-4 cursor-pointer space-y-3 bg-white">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <span class="text-[10px] font-bold text-gray-400">Frame: Process block 1</span>
+                            <span class="text-[9px] bg-brandDark text-white px-1.5 py-0.5 rounded font-mono">Layer</span>
+                        </div>
+
+                        <div>
+                            <span class="bg-brandGreen text-[11px] font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Our Working Process</span>
+                            <p class="text-[8px] text-gray-500 mt-0.5">Step-by-Step Guide to Achieving Your Business Goals</p>
+                        </div>
+
+                        <!-- ALL 6 STEPS WITH FULL DETAILS -->
+                        <div class="space-y-1.5">
+                            <!-- STEP 01 -->
+                            <div class="bg-brandGreen p-2.5 rounded-xl border border-brandDark text-[9px] space-y-1 shadow-sm">
+                                <div class="flex justify-between items-center font-bold text-brandDark">
+                                    <span class="text-xs">01 Consultation</span>
+                                    <span class="w-4 h-4 rounded-full border border-brandDark flex items-center justify-center font-mono text-xs bg-white">-</span>
+                                </div>
+                                <p class="text-[7.5px] text-gray-800 leading-tight border-t border-brandDark/20 pt-1">
+                                    During the initial consultation, we will discuss your business goals and objectives, target audience, and current marketing efforts. This will allow us to understand your needs and tailor our services to best fit your requirements.
+                                </p>
+                            </div>
+
+                            <!-- STEP 02 -->
+                            <div class="bg-brandGray p-2.5 rounded-xl border border-brandDark text-[9px] flex justify-between items-center font-bold text-brandDark">
+                                <span>02 Research and Strategy Development</span>
+                                <span class="w-4 h-4 rounded-full border border-brandDark flex items-center justify-center font-mono text-xs bg-white">+</span>
+                            </div>
+
+                            <!-- STEP 03 -->
+                            <div class="bg-brandGray p-2.5 rounded-xl border border-brandDark text-[9px] flex justify-between items-center font-bold text-brandDark">
+                                <span>03 Implementation</span>
+                                <span class="w-4 h-4 rounded-full border border-brandDark flex items-center justify-center font-mono text-xs bg-white">+</span>
+                            </div>
+
+                            <!-- STEP 04 -->
+                            <div class="bg-brandGray p-2.5 rounded-xl border border-brandDark text-[9px] flex justify-between items-center font-bold text-brandDark">
+                                <span>04 Monitoring and Optimization</span>
+                                <span class="w-4 h-4 rounded-full border border-brandDark flex items-center justify-center font-mono text-xs bg-white">+</span>
+                            </div>
+
+                            <!-- STEP 05 -->
+                            <div class="bg-brandGray p-2.5 rounded-xl border border-brandDark text-[9px] flex justify-between items-center font-bold text-brandDark">
+                                <span>05 Reporting and Communication</span>
+                                <span class="w-4 h-4 rounded-full border border-brandDark flex items-center justify-center font-mono text-xs bg-white">+</span>
+                            </div>
+
+                            <!-- STEP 06 -->
+                            <div class="bg-brandGray p-2.5 rounded-xl border border-brandDark text-[9px] flex justify-between items-center font-bold text-brandDark">
+                                <span>06 Continual Improvement</span>
+                                <span class="w-4 h-4 rounded-full border border-brandDark flex items-center justify-center font-mono text-xs bg-white">+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FRAME 5: TEAM BLOCK 1 -->
+                    <div id="frame-team" onclick="selectLayer('frame-team')" class="figma-frame w-full p-4 cursor-pointer space-y-3 bg-white">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <span class="text-[10px] font-bold text-gray-400">Frame: Team block 1</span>
+                            <span class="text-[9px] bg-brandDark text-white px-1.5 py-0.5 rounded font-mono">Layer</span>
+                        </div>
+
+                        <!-- HEADER & SUBTITLE -->
+                        <div class="space-y-0.5">
+                            <span class="bg-brandGreen text-[11px] font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Team</span>
+                            <p class="text-[8px] text-gray-600">Meet the skilled and experienced team behind our successful digital marketing strategies</p>
+                        </div>
+
+                        <!-- 3x2 GRID OF 6 TEAM MEMBERS -->
+                        <div class="grid grid-cols-3 gap-2 pt-1 text-[7.5px]">
+                            <!-- 1. John Smith -->
+                            <div class="bg-white p-2.5 rounded-xl border border-brandDark space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-6 h-6 rounded-full bg-brandGreen border border-brandDark flex items-center justify-center font-bold text-[8px]">JS</div>
+                                    <span class="bg-brandDark text-white text-[7px] px-1 py-0.5 rounded-full">in</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[8.5px] text-brandDark">John Smith</p>
+                                    <p class="text-[7px] text-gray-500">CEO and Founder</p>
+                                </div>
+                                <hr class="border-gray-200">
+                                <p class="text-[7px] text-gray-600 leading-tight">10+ years of experience in digital marketing. Expertise in SEO, PPC, and content strategy</p>
+                            </div>
+
+                            <!-- 2. Jane Doe -->
+                            <div class="bg-white p-2.5 rounded-xl border border-brandDark space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-6 h-6 rounded-full bg-brandGreen border border-brandDark flex items-center justify-center font-bold text-[8px]">JD</div>
+                                    <span class="bg-brandDark text-white text-[7px] px-1 py-0.5 rounded-full">in</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[8.5px] text-brandDark">Jane Doe</p>
+                                    <p class="text-[7px] text-gray-500">Director of Operations</p>
+                                </div>
+                                <hr class="border-gray-200">
+                                <p class="text-[7px] text-gray-600 leading-tight">7+ years of experience in project management and team leadership. Strong organizational and communication skills</p>
+                            </div>
+
+                            <!-- 3. Michael Brown -->
+                            <div class="bg-white p-2.5 rounded-xl border border-brandDark space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-6 h-6 rounded-full bg-brandGreen border border-brandDark flex items-center justify-center font-bold text-[8px]">MB</div>
+                                    <span class="bg-brandDark text-white text-[7px] px-1 py-0.5 rounded-full">in</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[8.5px] text-brandDark">Michael Brown</p>
+                                    <p class="text-[7px] text-gray-500">Senior SEO Specialist</p>
+                                </div>
+                                <hr class="border-gray-200">
+                                <p class="text-[7px] text-gray-600 leading-tight">5+ years of experience in SEO and content creation. Proficient in keyword research and on-page optimization</p>
+                            </div>
+
+                            <!-- 4. Emily Johnson -->
+                            <div class="bg-white p-2.5 rounded-xl border border-brandDark space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-6 h-6 rounded-full bg-brandGreen border border-brandDark flex items-center justify-center font-bold text-[8px]">EJ</div>
+                                    <span class="bg-brandDark text-white text-[7px] px-1 py-0.5 rounded-full">in</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[8.5px] text-brandDark">Emily Johnson</p>
+                                    <p class="text-[7px] text-gray-500">PPC Manager</p>
+                                </div>
+                                <hr class="border-gray-200">
+                                <p class="text-[7px] text-gray-600 leading-tight">3+ years of experience in paid search advertising. Skilled in campaign management and performance analysis</p>
+                            </div>
+
+                            <!-- 5. Brian Williams -->
+                            <div class="bg-white p-2.5 rounded-xl border border-brandDark space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-6 h-6 rounded-full bg-brandGreen border border-brandDark flex items-center justify-center font-bold text-[8px]">BW</div>
+                                    <span class="bg-brandDark text-white text-[7px] px-1 py-0.5 rounded-full">in</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[8.5px] text-brandDark">Brian Williams</p>
+                                    <p class="text-[7px] text-gray-500">Social Media Specialist</p>
+                                </div>
+                                <hr class="border-gray-200">
+                                <p class="text-[7px] text-gray-600 leading-tight">4+ years of experience in social media marketing. Proficient in creating and scheduling content, analyzing metrics</p>
+                            </div>
+
+                            <!-- 6. Sarah Kim -->
+                            <div class="bg-white p-2.5 rounded-xl border border-brandDark space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-start">
+                                    <div class="w-6 h-6 rounded-full bg-brandGreen border border-brandDark flex items-center justify-center font-bold text-[8px]">SK</div>
+                                    <span class="bg-brandDark text-white text-[7px] px-1 py-0.5 rounded-full">in</span>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-[8.5px] text-brandDark">Sarah Kim</p>
+                                    <p class="text-[7px] text-gray-500">Content Creator</p>
+                                </div>
+                                <hr class="border-gray-200">
+                                <p class="text-[7px] text-gray-600 leading-tight">2+ years of experience in writing and editing. Skilled in creating compelling, SEO-optimized content for various industries</p>
+                            </div>
+                        </div>
+
+                        <!-- SEE ALL TEAM BUTTON -->
+                        <button class="w-full bg-brandDark text-white py-2 text-[9px] rounded-xl font-medium mt-1">See all team</button>
+                    </div>
+                    <!-- FRAME 6: TESTIMONIALS BLOCK 1 -->
+                    <div id="frame-testimonials" onclick="selectLayer('frame-testimonials')" class="figma-frame w-full p-4 cursor-pointer space-y-3 bg-white">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <span class="text-[10px] font-bold text-gray-400">Frame: Testimonials block 1</span>
+                            <span class="text-[9px] bg-brandDark text-white px-1.5 py-0.5 rounded font-mono">Layer</span>
+                        </div>
+
+                        <!-- HEADER & SUBTITLE -->
+                        <div class="space-y-0.5">
+                            <span class="bg-brandGreen text-[11px] font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Testimonials</span>
+                            <p class="text-[8px] text-gray-600">Hear from Our Satisfied Clients: Read Our Testimonials to Learn More about Our Digital Marketing Services</p>
+                        </div>
+
+                        <!-- DARK TESTIMONIAL SLIDER CONTAINER -->
+                        <div class="bg-brandDark text-white p-4 rounded-2xl border border-brandDark space-y-4">
+
+                            <!-- TESTIMONIAL CARDS (SLIDER VIEW) -->
+                            <div class="grid grid-cols-3 gap-2 text-[7.5px]">
+                                <!-- CARD 1 (LEFT CUT) -->
+                                <div class="border border-gray-700 p-3 rounded-2xl opacity-40 space-y-2">
+                                    <p class="leading-tight">"We have been working with Positivus for the past year and have seen a significant increase in website traffic..."</p>
+                                </div>
+
+                                <!-- CARD 2 (ACTIVE CENTER) -->
+                                <div class="border border-brandGreen p-3 rounded-2xl space-y-2 relative bg-brandDark">
+                                    <p class="text-gray-200 leading-tight">
+                                        "We have been working with Positivus for the past year and have seen a significant increase in website traffic and leads as a result of their efforts. The team is professional, responsive, and truly cares about the success of our business. We highly recommend
+                                        Positivus to any company looking to grow their online presence."
+                                    </p>
+                                    <div>
+                                        <p class="font-bold text-[8.5px] text-brandGreen">John Smith</p>
+                                        <p class="text-[7px] text-gray-400">Marketing Director at XYZ Corp</p>
+                                    </div>
+                                </div>
+
+                                <!-- CARD 3 (RIGHT CUT) -->
+                                <div class="border border-gray-700 p-3 rounded-2xl opacity-40 space-y-2">
+                                    <p class="leading-tight">"We have been working with Positivus for the past year and have seen a significant increase..."</p>
+                                </div>
+                            </div>
+
+                            <!-- SLIDER CONTROLS (ARROWS & PAGINATION DOTS) -->
+                            <div class="flex justify-between items-center pt-2">
+                                <span class="w-5 h-5 rounded-full border border-gray-700 flex items-center justify-center text-xs text-gray-400 cursor-pointer">←</span>
+
+                                <div class="flex gap-1.5 items-center">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+                                    <span class="w-2 h-2 rounded-full bg-brandGreen"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+                                </div>
+
+                                <span class="w-5 h-5 rounded-full border border-gray-700 flex items-center justify-center text-xs text-white cursor-pointer">→</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- FRAME 7: CONTACT BLOCK 1 -->
+                    <div id="frame-contact" onclick="selectLayer('frame-contact')" class="figma-frame w-full p-4 cursor-pointer space-y-3 bg-white">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <span class="text-[10px] font-bold text-gray-400">Frame: Contact block 1</span>
+                            <span class="text-[9px] bg-brandDark text-white px-1.5 py-0.5 rounded font-mono">Layer</span>
+                        </div>
+
+                        <!-- HEADER & SUBTITLE -->
+                        <div class="space-y-0.5">
+                            <span class="bg-brandGreen text-[11px] font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Contact Us</span>
+                            <p class="text-[8px] text-gray-600">Connect with Us: Let's Discuss Your Digital Marketing Needs</p>
+                        </div>
+
+                        <!-- CONTACT FORM CONTAINER -->
+                        <div class="bg-brandGray/50 p-3 rounded-2xl border border-gray-200 space-y-2.5">
+
+                            <!-- RADIO OPTIONS (Say Hi / Get a Quote) -->
+                            <div class="flex gap-4 text-[8.5px] font-semibold text-brandDark">
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="contact-type" checked class="accent-brandDark"> Say Hi
+                                </label>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="radio" name="contact-type" class="accent-brandDark"> Get a Quote
+                                </label>
+                            </div>
+
+                            <!-- NAME FIELD -->
+                            <div class="space-y-1">
+                                <label class="text-[7.5px] font-bold text-gray-700 block">Name</label>
+                                <input type="text" placeholder="Name" class="w-full p-2 border border-gray-300 rounded-xl text-[8px] bg-white outline-none" disabled>
+                            </div>
+
+                            <!-- EMAIL FIELD -->
+                            <div class="space-y-1">
+                                <label class="text-[7.5px] font-bold text-gray-700 block">Email*</label>
+                                <input type="email" placeholder="Email" class="w-full p-2 border border-gray-300 rounded-xl text-[8px] bg-white outline-none" disabled>
+                            </div>
+
+                            <!-- MESSAGE FIELD -->
+                            <div class="space-y-1">
+                                <label class="text-[7.5px] font-bold text-gray-700 block">Message*</label>
+                                <textarea placeholder="Message" rows="3" class="w-full p-2 border border-gray-300 rounded-xl text-[8px] bg-white outline-none resize-none" disabled></textarea>
+                            </div>
+
+                            <!-- SEND MESSAGE BUTTON -->
+                            <button class="w-full bg-brandDark text-white py-2.5 text-[9px] rounded-xl font-medium">Send Message</button>
+                        </div>
+                    </div>
+
+                    <!-- FRAME 8: FOOTER BLOCK 1 (ADDED FROM YOUR SCREENSHOT) -->
+                    <div id="frame-footer" onclick="selectLayer('frame-footer')" class="figma-frame w-full p-4 cursor-pointer space-y-3 bg-brandDark text-white rounded-2xl border-2 border-brandDark">
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-1.5">
+                            <span class="text-[10px] font-bold text-gray-400">Frame: Footer block 1</span>
+                            <span class="text-[9px] bg-brandGreen text-brandDark font-bold px-1.5 py-0.5 rounded font-mono">Layer</span>
+                        </div>
+
+                        <!-- BRAND & NAV -->
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1 font-bold text-sm text-white">
+                                <span class="text-brandGreen text-xs">★</span> Positivus
+                            </div>
+                            <div class="flex gap-1.5 text-[7px] text-gray-300">
+                                <span>About</span>
+                                <span>Services</span>
+                                <span>Pricing</span>
+                            </div>
+                        </div>
+
+                        <!-- CONTACT DETAILS & NEWSLETTER -->
+                        <div class="space-y-2 pt-1 border-t border-gray-800">
+                            <div>
+                                <span class="bg-brandGreen text-brandDark font-bold text-[8px] px-1.5 py-0.5 rounded">Contact us:</span>
+                                <p class="text-[7px] text-gray-300 mt-1">Email: info@positivus.com</p>
+                                <p class="text-[7px] text-gray-300">Phone: 555-567-8901</p>
+                            </div>
+
+                            <!-- SUBSCRIBE BOX -->
+                            <div class="bg-[#292A32] p-2 rounded-xl flex gap-1 border border-gray-700">
+                                <input type="email" placeholder="Email" class="w-full bg-transparent text-[8px] text-white border border-gray-600 rounded px-1.5 outline-none" disabled>
+                                <button class="bg-brandGreen text-brandDark font-bold text-[7px] px-2 py-1 rounded whitespace-nowrap">Subscribe</button>
+                            </div>
+                        </div>
+
+                        <!-- COPYRIGHT -->
+                        <div class="border-t border-gray-800 pt-1 flex justify-between text-[7px] text-gray-400">
+                            <span>© 2023 Positivus.</span>
+                            <span class="underline">Privacy Policy</span>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- FRAME: STYLE GUIDE (COMPACT FIT SIZE) -->
+                <div id="frame-style" onclick="selectLayer('frame-style')" class="figma-frame w-80 p-3.5 cursor-pointer space-y-3 bg-white shrink-0">
+                    <div class="flex justify-between items-center border-b pb-1">
+                        <div class="text-[10px] font-bold text-gray-400">Frame: Style</div>
+                        <span class="text-[8px] bg-brandDark text-white px-1.5 py-0.5 rounded font-mono">Style Guide</span>
+                    </div>
+
+                    <!-- TOP CATEGORIES -->
+                    <div class="grid grid-cols-3 gap-1.5 text-center font-bold text-[9px]">
+                        <div>
+                            <span class="bg-brandGreen px-1.5 py-0.5 rounded border border-brandDark inline-block">Typography</span>
+                            <p class="text-[7px] text-gray-500 font-normal mt-0.5 text-left">Desktop</p>
+                        </div>
+                        <div>
+                            <span class="bg-brandGreen px-1.5 py-0.5 rounded border border-brandDark inline-block">Colors</span>
+                        </div>
+                        <div>
+                            <span class="bg-brandGreen px-1.5 py-0.5 rounded border border-brandDark inline-block">Illustrations</span>
+                        </div>
+                    </div>
+
+                    <!-- DETAILS GRID -->
+                    <div class="grid grid-cols-2 gap-2 text-[8px]">
+                        <!-- TYPOGRAPHY (Desktop & Mobile) -->
+                        <div class="space-y-2 pr-1.5 border-r border-gray-200">
+                            <!-- Desktop -->
+                            <div class="space-y-1">
+                                <div><span class="font-bold text-brandGreen">H1</span> <span class="font-bold text-brandDark ml-1">Positivus</span></div>
+                                <div><span class="font-bold text-brandGreen">H2</span> <span class="font-bold text-brandDark ml-1">Positivus</span></div>
+                                <div><span class="font-bold text-brandGreen">H3</span> <span class="font-bold text-brandDark ml-1">Positivus</span></div>
+                            </div>
+
+                            <!-- Mobile -->
+                            <div class="pt-1.5 border-t border-gray-200">
+                                <span class="bg-brandGreen text-[7px] font-bold px-1 py-0.5 rounded border border-brandDark inline-block">Mobile</span>
+                                <div class="space-y-0.5 mt-1 text-[7px]">
+                                    <div><span class="font-bold text-brandGreen">H1</span> <span class="font-bold text-brandDark ml-1">Positivus</span></div>
+                                    <div><span class="font-bold text-brandGreen">H2</span> <span class="font-bold text-brandDark ml-1">Positivus</span></div>
+                                </div>
+                            </div>
+
+                            <button class="bg-brandDark text-white text-[7px] px-2 py-1 rounded border border-brandDark w-full mt-1">Font Link</button>
+                        </div>
+
+                        <!-- COLORS & CREDITS -->
+                        <div class="space-y-2">
+                            <div class="space-y-1 text-[7.5px] font-bold">
+                                <div class="bg-brandGreen p-1.5 rounded border border-brandDark text-brandDark flex justify-between items-center">
+                                    <span>B9FF66</span>
+                                    <span class="w-2 h-2 rounded-full bg-white border border-brandDark"></span>
+                                </div>
+                                <div class="bg-brandDark text-white p-1.5 rounded border border-brandDark flex justify-between items-center">
+                                    <span>191A23</span>
+                                    <span class="w-2 h-2 rounded-full bg-brandGreen"></span>
+                                </div>
+                                <div class="bg-brandGray p-1.5 rounded border border-brandDark text-brandDark flex justify-between items-center">
+                                    <span>F3F3F3</span>
+                                    <span class="w-2 h-2 rounded-full bg-brandDark"></span>
+                                </div>
+                            </div>
+
+                            <div class="pt-2 space-y-1 text-[6.5px]">
+                                <div class="bg-brandDark text-white p-1 rounded text-center">Illustrations by Igor K.</div>
+                                <div class="bg-brandDark text-white p-1 rounded text-center">Images by Freepik</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- FRAME 3: MY WEBSITE (Compact Frame Right Next to Style) -->
+                <div id="frame-my-website" onclick="selectLayer('frame-my-website')" class="figma-frame w-52 h-40 p-3 cursor-pointer flex flex-col justify-between bg-white shrink-0">
+                    <div class="flex justify-between items-center border-b pb-1">
+                        <span class="text-[7px] font-bold text-gray-300">Frame: My Website</span>
+                        <span class="text-[5px] bg-brandDark text-white px-1 py-0.5 rounded font-mono">Card</span>
+                    </div>
+
+                    <!-- CONTENT -->
+                    <div class="space-y-1 my-auto">
+                        <h3 class="text-xs font-bold text-brandDark leading-snug">Check out my portfolio! ;)</h3>
+                    </div>
+
+                    <!-- GREEN BUTTON -->
+                    <button class="w-full bg-brandGreen text-brandDark text-[8px] font-bold py-1.5 rounded border border-brandDark hover:bg-opacity-90 transition">
+        Go to Olga's website
+    </button>
+                </div>
+                <!-- COLUMN 3: MY WEBSITE & FEEDBACK STACKED -->
+                <div class="flex flex-col gap-6 shrink-0">
+
+
+
+                    <!-- FRAME: FEEDBACK (Placed directly below My Website) -->
+                    <div id="frame-feedback" onclick="selectLayer('frame-feedback')" class="figma-frame w-52 p-4 cursor-pointer space-y-3 bg-white shrink-0">
+                        <div class="flex justify-between items-center border-b pb-1">
+                            <span class="text-[9px] font-bold text-gray-400">Frame: Feedback</span>
+                            <span class="text-[7px] bg-brandDark text-white px-1 py-0.5 rounded font-mono">Card</span>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-[9px] font-bold text-brandDark leading-snug">We'd love to hear from you! Share your thoughts about the free Positivus version</p>
+                        </div>
+                        <button class="w-full bg-brandGreen text-brandDark text-[8px] font-bold py-1.5 rounded border border-brandDark">
+            Share Your Feedback
+        </button>
+                    </div>
+
+                </div>
+                <!-- FRAME: HOME MOB (Exact Width: 430px) -->
+                <div id="frame-home-mob" onclick="selectLayer('frame-home-mob')" class="figma-frame w-[430px] p-5 cursor-pointer space-y-6 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                    <!-- FRAME HEADER -->
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div class="text-xs font-bold text-gray-400">Frame: Home Mob</div>
+                        <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">430 × 9572 px</span>
+                    </div>
+
+                    <!-- 1. HERO SECTION -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg tracking-tight">★ Positivus</span>
+                            <span class="text-xl">☰</span>
+                        </div>
+                        <h2 class="text-2xl font-bold leading-tight">Navigating the digital landscape for success</h2>
+                        <div class="h-44 bg-brandGreen rounded-2xl border border-brandDark flex items-center justify-center font-bold text-sm text-brandDark">
+                            [Hero Mobile Graphic]
+                        </div>
+                        <p class="text-xs text-gray-600 leading-relaxed">Our digital marketing agency helps businesses grow and succeed online through a range of services including SEO, PPC, social media marketing, and content creation.</p>
+                        <button class="w-full bg-brandDark text-white py-3 text-xs rounded-xl font-medium">Book a consultation</button>
+                    </div>
+
+                    <!-- LOGO STRIP -->
+                    <div class="grid grid-cols-3 gap-2 py-2 opacity-60 text-center font-bold text-[10px] grayscale border-y">
+                        <span>amazon</span><span>dribbble</span><span>HubSpot</span>
+                        <span>Notion</span><span>NETFLIX</span><span>zoom</span>
+                    </div>
+
+                    <!-- 2. SERVICES SECTION -->
+                    <div class="space-y-4 pt-2">
+                        <div>
+                            <span class="bg-brandGreen text-sm font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Services</span>
+                            <p class="text-[11px] text-gray-500 mt-1">At our digital marketing agency, we offer a range of services to help businesses grow.</p>
+                        </div>
+
+                        <div class="space-y-3 text-xs font-bold">
+                            <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex justify-between items-end h-28">
+                                <span class="bg-brandGreen p-1 rounded">Search engine optimization</span>
+                                <span class="text-sm">↗</span>
+                            </div>
+                            <div class="bg-brandGreen p-4 rounded-2xl border border-brandDark flex justify-between items-end h-28">
+                                <span>Pay-per-click advertising</span>
+                                <span class="text-sm">↗</span>
+                            </div>
+                            <div class="bg-brandDark text-white p-4 rounded-2xl border border-brandDark flex justify-between items-end h-28">
+                                <span class="bg-white text-brandDark p-1 rounded">Social Media Marketing</span>
+                                <span class="text-sm">↗</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. CTA CARD -->
+                    <div class="bg-brandGray p-5 rounded-2xl border border-brandDark space-y-3">
+                        <h3 class="font-bold text-sm">Let's make things happen</h3>
+                        <p class="text-[11px] text-gray-600">Contact us today to learn more about how our digital marketing services can help your business grow and succeed online.</p>
+                        <button class="w-full bg-brandDark text-white py-2.5 text-xs rounded-xl font-medium">Get your free proposal</button>
+                    </div>
+
+                    <!-- 4. CASE STUDIES -->
+                    <div class="space-y-3">
+                        <span class="bg-brandGreen text-sm font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Case Studies</span>
+                        <div class="bg-brandDark text-white p-5 rounded-2xl text-xs space-y-3">
+                            <p class="text-gray-300 leading-relaxed text-[11px]">For a local restaurant, we implemented a targeted PPC campaign that resulted in a 300% increase in online reservations.</p>
+                            <a href="#" class="text-brandGreen font-bold flex items-center gap-1 text-[11px]">Learn more <span>↗</span></a>
+                        </div>
+                    </div>
+
+                    <!-- 5. WORKING PROCESS ACCORDIONS -->
+                    <div class="space-y-3">
+                        <span class="bg-brandGreen text-sm font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Our Working Process</span>
+                        <div class="space-y-2 text-xs font-bold">
+                            <div class="bg-brandGreen p-3.5 rounded-xl border border-brandDark flex justify-between items-center">
+                                <span>01 Consultation</span>
+                                <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark">−</span>
+                            </div>
+                            <div class="bg-brandGray p-3.5 rounded-xl border border-brandDark flex justify-between items-center text-gray-700">
+                                <span>02 Research and Strategy Development</span>
+                                <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark">+</span>
+                            </div>
+                            <div class="bg-brandGray p-3.5 rounded-xl border border-brandDark flex justify-between items-center text-gray-700">
+                                <span>03 Implementation</span>
+                                <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark">+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. TEAM CARDS -->
+                    <div class="space-y-3">
+                        <span class="bg-brandGreen text-sm font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Team</span>
+                        <div class="space-y-3">
+                            <div class="p-4 border border-brandDark rounded-2xl bg-white space-y-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-brandGreen rounded-full flex items-center justify-center font-bold">J</div>
+                                    <div>
+                                        <h4 class="font-bold text-xs">John Smith</h4>
+                                        <p class="text-[10px] text-gray-500">CEO and Founder</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="text-[10px] text-gray-600">10+ years of experience in digital marketing. Expertise in SEO, PPC, and content strategy.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. CONTACT / FORM SECTION -->
+                    <div class="bg-brandGray p-5 rounded-2xl border border-brandDark space-y-3">
+                        <span class="bg-brandGreen text-sm font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Contact Us</span>
+                        <form class="space-y-2 text-xs">
+                            <div>
+                                <label class="block text-[10px] font-bold mb-1">Name</label>
+                                <input type="text" placeholder="Name" class="w-full p-2 rounded-lg border border-gray-300 text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold mb-1">Email*</label>
+                                <input type="email" placeholder="Email" class="w-full p-2 rounded-lg border border-gray-300 text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold mb-1">Message*</label>
+                                <textarea placeholder="Message" class="w-full p-2 rounded-lg border border-gray-300 text-xs h-16"></textarea>
+                            </div>
+                            <button class="w-full bg-brandDark text-white py-2.5 text-xs rounded-xl font-medium mt-1">Send Message</button>
+                        </form>
+                    </div>
+
+                    <!-- 8. FOOTER MOBILE -->
+                    <div class="bg-brandDark text-white p-5 rounded-2xl space-y-4 text-center text-xs">
+                        <span class="font-bold text-lg tracking-tight block text-left">★ Positivus</span>
+                        <div class="space-y-1 text-gray-400 text-[10px]">
+                            <p>Email: arsalanshykh4567@gmail.com</p>
+                            <p>Phone: 03452352252</p>
+                        </div>
+                        <div class="bg-[#292A32] p-3 rounded-xl space-y-2">
+                            <input type="email" placeholder="Email" class="w-full p-2 rounded bg-transparent border border-gray-600 text-[10px] text-white">
+                            <button class="w-full bg-brandGreen text-brandDark py-1.5 text-xs rounded font-bold">Subscribe to news</button>
+                        </div>
+                        <hr class="border-gray-700">
+                        <p class="text-[9px] text-gray-500">© 2026 Positivus. All Rights Reserved.</p>
+                    </div>
+
+                </div>
+                <!-- FRAME: ABOUT US (Exact Layout Width: 1440px Desktop Section) -->
+                <div id="frame-about" onclick="selectLayer('frame-about')" class="figma-frame w-[900px] p-8 cursor-pointer space-y-8 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                    <!-- FRAME HEADER -->
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div class="text-xs font-bold text-gray-400">Frame: About Us</div>
+                        <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">1440 × 6390 px</span>
+                    </div>
+
+                    <!-- 1. HERO HEADER SECTION -->
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center border-b pb-4">
+                            <span class="font-bold text-xl tracking-tight">★ Positivus</span>
+                            <div class="flex gap-6 text-xs font-medium text-gray-600">
+                                <span>About us</span><span>Services</span><span>Use Cases</span><span>Pricing</span><span>Blog</span>
+                            </div>
+                            <button class="border border-brandDark px-4 py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-8 items-center bg-brandGray p-8 rounded-3xl border border-brandDark">
+                            <div class="space-y-4">
+                                <span class="bg-brandGreen text-xs font-bold px-3 py-1 rounded border border-brandDark inline-block">About Us</span>
+                                <h1 class="text-3xl font-bold leading-tight">Together for Success</h1>
+                                <p class="text-xs text-gray-600 leading-relaxed">At Positivus, we believe in the power of digital marketing to transform businesses. Our team of experts is dedicated to driving growth and delivering measurable results for our clients.</p>
+                            </div>
+                            <div class="h-48 bg-brandGreen rounded-2xl border border-brandDark flex items-center justify-center font-bold text-sm">
+                                [Hero Illustration]
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. OUR IMPACT IN NUMBERS -->
+                    <div class="space-y-4 pt-4">
+                        <div>
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Our Impact in Numbers</span>
+                            <p class="text-[10px] text-gray-500 mt-1">A snapshot of what we have achieved so far and our relentless drive for success.</p>
+                        </div>
+                        <div class="grid grid-cols-5 gap-4 border border-brandDark p-6 rounded-2xl bg-brandGray text-center">
+                            <div>
+                                <h3 class="text-xl font-bold">8+</h3>
+                                <p class="text-[9px] text-gray-500">Years of Experience</p>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">60+</h3>
+                                <p class="text-[9px] text-gray-500">Experts</p>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">100+</h3>
+                                <p class="text-[9px] text-gray-500">Successful Campaigns</p>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">20+</h3>
+                                <p class="text-[9px] text-gray-500">Industry Awards</p>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">500%</h3>
+                                <p class="text-[9px] text-gray-500">Average ROI Increase</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. OUR JOURNEY (TIMELINE) -->
+                    <div class="space-y-6 pt-4">
+                        <div>
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Our Journey</span>
+                            <p class="text-[10px] text-gray-500 mt-1">The milestones and growth that have shaped Positivus into the leading digital marketing agency it is today.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-6">
+                                <span class="font-bold text-sm w-16">2018</span>
+                                <div class="bg-brandDark text-white p-4 rounded-2xl flex-1 border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">The Beginning</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Positivus was founded with a small team of passionate marketers aiming to redefine digital growth.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <span class="font-bold text-sm w-16">2021</span>
+                                <div class="bg-brandDark text-white p-4 rounded-2xl flex-1 border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">Industry Recognition</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Expanded our client base internationally and received top marketing agency awards.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <span class="font-bold text-sm w-16">2023</span>
+                                <div class="bg-brandDark text-white p-4 rounded-2xl flex-1 border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">Innovation and Growth</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Integrated advanced AI-driven marketing strategies to scale client results faster.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <span class="font-bold text-sm w-16">2024</span>
+                                <div class="bg-brandDark text-white p-4 rounded-2xl flex-1 border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">Leading the Future</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Continuously pushing boundaries with cutting-edge campaigns and multi-channel expertise.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. CORE VALUES -->
+                    <div class="space-y-4 pt-4">
+                        <div>
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Core Values</span>
+                            <p class="text-[10px] text-gray-500 mt-1">The principles that guide our everyday work and client interactions.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-xs font-bold">
+                            <div class="p-5 border border-brandDark rounded-2xl bg-white space-y-2">
+                                <h4 class="text-sm">Client Success First</h4>
+                                <p class="text-[10px] font-normal text-gray-600">We put our clients' goals at the center of everything we do, ensuring long-term partnerships and success.</p>
+                            </div>
+                            <div class="p-5 border border-brandDark rounded-2xl bg-white space-y-2">
+                                <h4 class="text-sm">Innovation</h4>
+                                <p class="text-[10px] font-normal text-gray-600">Constantly exploring creative strategies and latest trends to keep brands ahead.</p>
+                            </div>
+                            <div class="p-5 border border-brandDark rounded-2xl bg-white space-y-2">
+                                <h4 class="text-sm">Collaboration</h4>
+                                <p class="text-[10px] font-normal text-gray-600">Working closely together with transparency, trust, and shared vision.</p>
+                            </div>
+                            <div class="p-5 border border-brandDark rounded-2xl bg-white space-y-2">
+                                <h4 class="text-sm">Transparency</h4>
+                                <p class="text-[10px] font-normal text-gray-600">Clear reporting and honest communication at every single step of our campaigns.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. QUOTE BANNER -->
+                    <div class="bg-brandDark text-white p-6 rounded-3xl border border-brandDark space-y-3">
+                        <p class="text-xs italic text-brandGreen">"At Positivus, we believe that success is built on innovation, collaboration, and a relentless focus on delivering results."</p>
+                        <span class="text-[10px] text-gray-400 block">— John Smith, Founder & CEO</span>
+                    </div>
+
+                    <!-- 6. JOIN OUR TEAM CTA -->
+                    <div class="bg-brandGreen p-6 rounded-3xl border border-brandDark flex justify-between items-center">
+                        <div class="space-y-1">
+                            <h3 class="font-bold text-sm">Join Our Team</h3>
+                            <p class="text-[10px] text-gray-700">Are you passionate about digital marketing and collaboration? Check out our open positions to join our growing team.</p>
+                        </div>
+                        <button class="bg-brandDark text-white px-4 py-2 rounded-xl text-xs font-bold shrink-0">Apply Now</button>
+                    </div>
+
+                    <!-- 7. FOOTER SECTION -->
+                    <div class="bg-brandDark text-white p-6 rounded-3xl space-y-4 text-xs">
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-4">
+                            <span class="font-bold text-base tracking-tight">★ Positivus</span>
+                            <div class="flex gap-4 text-[10px] text-gray-400">
+                                <span>About us</span><span>Services</span><span>Use Cases</span><span>Pricing</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-[10px]">
+                            <div>
+                                <span class="bg-brandGreen text-brandDark px-2 py-0.5 rounded font-bold">Contact us:</span>
+                                <p class="text-gray-300 mt-2">Email: info@positivus.com</p>
+                                <p class="text-gray-300">Phone: 555-567-8901</p>
+                            </div>
+                            <div class="bg-[#292A32] p-4 rounded-xl space-y-2">
+                                <input type="email" placeholder="Email" class="w-full p-2 rounded bg-transparent border border-gray-600 text-[10px] text-white">
+                                <button class="w-full bg-brandGreen text-brandDark py-1.5 text-xs rounded font-bold">Subscribe to news</button>
+                            </div>
+                        </div>
+                        <hr class="border-gray-70">
+                        <p class="text-[9px] text-gray-500 text-center">© 2026 Positivus. All Rights Reserved.</p>
+                    </div>
+
+                </div>
+                <!-- FRAME: ABOUT US MOB (Exact Size: 400 × 8387 px Ratio) -->
+                <div id="frame-about-mob" onclick="selectLayer('frame-about-mob')" class="figma-frame w-[400px] p-5 cursor-pointer space-y-6 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                    <!-- FRAME HEADER -->
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div class="text-xs font-bold text-gray-400">Frame: About Us Mob</div>
+                        <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">430 × 8387 px</span>
+                    </div>
+
+                    <!-- 1. HERO SECTION (MOBILE) -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <span class="font-bold text-base tracking-tight">★ Positivus</span>
+                            <span class="text-lg cursor-pointer">☰</span>
+                        </div>
+                        <div class="text-center space-y-3 pt-2">
+                            <h2 class="text-2xl font-bold leading-tight">Together for Success</h2>
+                            <p class="text-xs text-gray-600 leading-relaxed px-2">At Positivus, we believe in the power of digital marketing to transform businesses and deliver measurable results.</p>
+                        </div>
+                        <div class="h-44 bg-brandGreen rounded-2xl border border-brandDark flex items-center justify-center font-bold text-xs text-brandDark">
+                            [Hero Mobile Graphic]
+                        </div>
+                    </div>
+
+                    <!-- 2. OUR IMPACT IN NUMBERS -->
+                    <div class="space-y-3 pt-2">
+                        <div class="text-center">
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Our Impact in Numbers</span>
+                            <p class="text-[10px] text-gray-500 mt-1">A snapshot of what we have achieved so far.</p>
+                        </div>
+
+                        <div class="space-y-2 text-center">
+                            <div class="bg-brandGray p-3 rounded-xl border border-brandDark">
+                                <h3 class="text-lg font-bold">8+</h3>
+                                <p class="text-[9px] text-gray-500">Years of Experience</p>
+                            </div>
+                            <div class="bg-brandGray p-3 rounded-xl border border-brandDark">
+                                <h3 class="text-lg font-bold">60+</h3>
+                                <p class="text-[9px] text-gray-500">Experts</p>
+                            </div>
+                            <div class="bg-brandGray p-3 rounded-xl border border-brandDark">
+                                <h3 class="text-lg font-bold">100+</h3>
+                                <p class="text-[9px] text-gray-500">Successful Campaigns</p>
+                            </div>
+                            <div class="bg-brandGreen p-3 rounded-xl border border-brandDark">
+                                <h3 class="text-lg font-bold">500%</h3>
+                                <p class="text-[9px] text-brandDark font-medium">Average ROI Increase</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. OUR JOURNEY (VERTICAL TIMELINE) -->
+                    <div class="space-y-4 pt-2">
+                        <div class="text-center">
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Our Journey</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="space-y-1">
+                                <span class="font-bold text-xs text-brandGreen bg-brandDark px-2 py-0.5 rounded inline-block">2018</span>
+                                <div class="bg-brandDark text-white p-3.5 rounded-xl border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">The Beginning</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Founded with a vision to redefine digital marketing growth.</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <span class="font-bold text-xs text-brandGreen bg-brandDark px-2 py-0.5 rounded inline-block">2021</span>
+                                <div class="bg-brandDark text-white p-3.5 rounded-xl border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">Industry Recognition</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Expanded globally and earned top marketing industry awards.</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <span class="font-bold text-xs text-brandGreen bg-brandDark px-2 py-0.5 rounded inline-block">2023</span>
+                                <div class="bg-brandDark text-white p-3.5 rounded-xl border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">Innovation and Growth</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Integrated AI-driven strategies to scale performance.</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <span class="font-bold text-xs text-brandGreen bg-brandDark px-2 py-0.5 rounded inline-block">2024</span>
+                                <div class="bg-brandDark text-white p-3.5 rounded-xl border border-brandDark">
+                                    <h4 class="font-bold text-xs text-brandGreen">Leading the Future</h4>
+                                    <p class="text-[10px] text-gray-300 mt-1">Setting new benchmarks with multi-channel campaigns.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. CORE VALUES (STACKED CARDS) -->
+                    <div class="space-y-3 pt-2">
+                        <div class="text-center">
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Core Values</span>
+                        </div>
+
+                        <div class="space-y-2.5 text-xs">
+                            <div class="p-4 border border-brandDark rounded-xl bg-white space-y-1">
+                                <h4 class="font-bold">Client Success First</h4>
+                                <p class="text-[10px] text-gray-600">We put client goals at the center of everything we do.</p>
+                            </div>
+                            <div class="p-4 border border-brandDark rounded-xl bg-white space-y-1">
+                                <h4 class="font-bold">Innovation</h4>
+                                <p class="text-[10px] text-gray-600">Exploring creative strategies to stay ahead.</p>
+                            </div>
+                            <div class="p-4 border border-brandDark rounded-xl bg-white space-y-1">
+                                <h4 class="font-bold">Collaboration</h4>
+                                <p class="text-[10px] text-gray-600">Working closely with transparency and trust.</p>
+                            </div>
+                            <div class="p-4 border border-brandDark rounded-xl bg-white space-y-1">
+                                <h4 class="font-bold">Transparency</h4>
+                                <p class="text-[10px] text-gray-600">Honest communication at every step.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. QUOTE BANNER -->
+                    <div class="bg-brandDark text-white p-5 rounded-2xl border border-brandDark text-center space-y-2">
+                        <p class="text-xs italic text-brandGreen">"At Positivus, success is built on innovation and collaboration."</p>
+                        <span class="text-[9px] text-gray-400 block">— John Smith, CEO</span>
+                    </div>
+
+                    <!-- 6. AWARDS & RECOGNITION -->
+                    <div class="space-y-3 pt-2">
+                        <div class="text-center">
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Awards & Recognition</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-center text-[9px] font-bold">
+                            <div class="p-3 border border-brandDark rounded-xl bg-brandGray">Best SEO Agency 2023</div>
+                            <div class="p-3 border border-brandDark rounded-xl bg-brandGray">Top Marketing Team</div>
+                            <div class="p-3 border border-brandDark rounded-xl bg-brandGray">Excellence in PPC</div>
+                            <div class="p-3 border border-brandDark rounded-xl bg-brandGray">Global Partner Award</div>
+                        </div>
+                    </div>
+
+                    <!-- 7. JOIN OUR TEAM -->
+                    <div class="bg-brandGreen p-5 rounded-2xl border border-brandDark space-y-3 text-center">
+                        <h3 class="font-bold text-sm">Join Our Team</h3>
+                        <p class="text-[10px] text-gray-700">Check out open positions to join our growing team.</p>
+                        <button class="w-full bg-brandDark text-white py-2 text-xs rounded-xl font-bold">Check Position</button>
+                    </div>
+
+                    <!-- 8. FOOTER MOBILE -->
+                    <div class="bg-brandDark text-white p-5 rounded-2xl space-y-4 text-center text-xs">
+                        <span class="font-bold text-lg tracking-tight block text-left">★ Positivus</span>
+                        <div class="space-y-1 text-gray-400 text-[10px]">
+                            <p>Email: info@positivus.com</p>
+                            <p>Phone: 555-567-8901</p>
+                        </div>
+                        <div class="bg-[#292A32] p-3 rounded-xl space-y-2">
+                            <input type="email" placeholder="Email" class="w-full p-2 rounded bg-transparent border border-gray-600 text-[10px] text-white">
+                            <button class="w-full bg-brandGreen text-brandDark py-1.5 text-xs rounded font-bold">Subscribe</button>
+                        </div>
+                        <hr class="border-gray-700">
+                        <p class="text-[9px] text-gray-500">© 2026 Positivus. All Rights Reserved.</p>
+                    </div>
+
+                </div>
+                <!-- FRAME: SERVICES (Exact Desktop Layout: 1440 × 6539 px) -->
+                <div id="frame-services" onclick="selectLayer('frame-services')" class="figma-frame w-[900px] p-8 cursor-pointer space-y-8 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                    <!-- FRAME HEADER -->
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div class="text-xs font-bold text-gray-400">Frame: Services</div>
+                        <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">1440 × 6539 px</span>
+                    </div>
+
+                    <!-- 1. NAVIGATION & HERO SECTION -->
+                    <div class="space-y-6">
+                        <div class="flex justify-between items-center border-b pb-4">
+                            <span class="font-bold text-xl tracking-tight">★ Positivus</span>
+                            <div class="flex gap-6 text-xs font-medium text-gray-600">
+                                <span>About us</span>
+                                <span class="bg-brandGreen text-brandDark px-2 py-0.5 rounded font-bold">Services</span>
+                                <span>Use Cases</span>
+                                <span>Pricing</span>
+                                <span>Blog</span>
+                            </div>
+                            <button class="border border-brandDark px-4 py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-8 items-center bg-brandGray p-8 rounded-3xl border border-brandDark">
+                            <div class="space-y-4">
+                                <h1 class="text-3xl font-bold leading-tight">Expert Digital Marketing Services</h1>
+                                <p class="text-xs text-gray-600 leading-relaxed">At our digital marketing agency, we offer a range of services to help businesses grow and succeed online. From SEO to social media marketing, we have you covered.</p>
+                            </div>
+                            <div class="h-48 bg-brandGreen rounded-2xl border border-brandDark flex items-center justify-center font-bold text-sm">
+                                [Services Hero Graphic]
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. SEO BANNER / CTA BOX -->
+                    <div class="bg-brandDark text-white p-6 rounded-3xl border border-brandDark flex justify-between items-center">
+                        <div class="space-y-2 max-w-md">
+                            <span class="bg-brandGreen text-brandDark text-xs font-bold px-3 py-1 rounded inline-block">Search Engine Optimization</span>
+                            <p class="text-[11px] text-gray-300">SEO is the process of improving your website's visibility on search engines like Google to drive organic traffic and qualified leads.</p>
+                        </div>
+                        <button class="bg-white text-brandDark px-5 py-2.5 rounded-xl text-xs font-bold shrink-0 border border-brandDark">Get Started</button>
+                    </div>
+
+                    <!-- 3. HOW WE WORK: SEO PROCESS (01 - 06 STACK) -->
+                    <div class="space-y-6 pt-2">
+                        <div>
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">How We Work: SEO Process</span>
+                            <p class="text-[10px] text-gray-500 mt-1">Our step-by-step approach to building and optimizing your organic search presence.</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <!-- STEP 01 -->
+                            <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex items-center gap-4">
+                                <span class="text-xl font-bold bg-brandGreen w-10 h-10 rounded-xl flex items-center justify-center border border-brandDark shrink-0">01</span>
+                                <div>
+                                    <h4 class="font-bold text-xs">Website Audit & Analysis</h4>
+                                    <p class="text-[10px] text-gray-600">Thoroughly analyzing technical SEO, page speed, content structure, and backlink profile.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 02 -->
+                            <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex items-center gap-4">
+                                <span class="text-xl font-bold bg-brandGreen w-10 h-10 rounded-xl flex items-center justify-center border border-brandDark shrink-0">02</span>
+                                <div>
+                                    <h4 class="font-bold text-xs">Keyword Research & Strategy</h4>
+                                    <p class="text-[10px] text-gray-600">Identifying high-intent search terms tailored to target your ideal customer base.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 03 -->
+                            <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex items-center gap-4">
+                                <span class="text-xl font-bold bg-brandGreen w-10 h-10 rounded-xl flex items-center justify-center border border-brandDark shrink-0">03</span>
+                                <div>
+                                    <h4 class="font-bold text-xs">On-Page Optimization</h4>
+                                    <p class="text-[10px] text-gray-600">Optimizing meta tags, head titles, internal linking, and content hierarchy for peak ranking.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 04 -->
+                            <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex items-center gap-4">
+                                <span class="text-xl font-bold bg-brandGreen w-10 h-10 rounded-xl flex items-center justify-center border border-brandDark shrink-0">04</span>
+                                <div>
+                                    <h4 class="font-bold text-xs">Content Creation & Optimization</h4>
+                                    <p class="text-[10px] text-gray-600">Creating high-quality content that engages users and answers key search queries.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 05 -->
+                            <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex items-center gap-4">
+                                <span class="text-xl font-bold bg-brandGreen w-10 h-10 rounded-xl flex items-center justify-center border border-brandDark shrink-0">05</span>
+                                <div>
+                                    <h4 class="font-bold text-xs">Link Building</h4>
+                                    <p class="text-[10px] text-gray-600">Acquiring high-authority backlinks to improve domain authority and trust.</p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 06 -->
+                            <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex items-center gap-4">
+                                <span class="text-xl font-bold bg-brandGreen w-10 h-10 rounded-xl flex items-center justify-center border border-brandDark shrink-0">06</span>
+                                <div>
+                                    <h4 class="font-bold text-xs">Monitoring & Reporting</h4>
+                                    <p class="text-[10px] text-gray-600">Tracking rankings, traffic growth, and ROI with transparent monthly analytical reports.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. CASE STUDIES CARDS GRID -->
+                    <div class="space-y-4 pt-2">
+                        <div>
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Use Cases</span>
+                            <p class="text-[10px] text-gray-500 mt-1">Real examples of how our SEO strategies delivered actual growth.</p>
+                        </div>
+
+                        <div class="bg-brandDark text-white p-6 rounded-3xl grid grid-cols-3 gap-6 divide-x divide-gray-700">
+                            <div class="space-y-3 pr-4">
+                                <h4 class="font-bold text-xs text-brandGreen">E-commerce Fashion Brand</h4>
+                                <p class="text-[10px] text-gray-300 leading-relaxed">Achieved 200% increase in organic traffic and 150% boost in online sales within 6 months.</p>
+                                <a href="#" class="text-brandGreen text-[10px] font-bold inline-block">Learn more ↗</a>
+                            </div>
+                            <div class="space-y-3 px-4">
+                                <h4 class="font-bold text-xs text-brandGreen">Local Restaurant Chain</h4>
+                                <p class="text-[10px] text-gray-300 leading-relaxed">Boosted local Google Maps rankings to #1, driving a 300% increase in store visits.</p>
+                                <a href="#" class="text-brandGreen text-[10px] font-bold inline-block">Learn more ↗</a>
+                            </div>
+                            <div class="space-y-3 pl-4">
+                                <h4 class="font-bold text-xs text-brandGreen">B2B Software Company</h4>
+                                <p class="text-[10px] text-gray-300 leading-relaxed">Generated over 500+ qualified monthly leads with a targeted content optimization strategy.</p>
+                                <a href="#" class="text-brandGreen text-[10px] font-bold inline-block">Learn more ↗</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. OUR OTHER SERVICES (GRID OF CARDS) -->
+                    <div class="space-y-4 pt-2">
+                        <div>
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Our Other Services</span>
+                            <p class="text-[10px] text-gray-500 mt-1">Explore our full suite of digital marketing solutions.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 text-xs font-bold">
+                            <div class="bg-brandGray p-5 rounded-2xl border border-brandDark flex justify-between items-center">
+                                <div>
+                                    <h4>Pay-per-click advertising</h4>
+                                    <span class="text-[10px] font-normal text-gray-500 block mt-1">Learn more ↗</span>
+                                </div>
+                                <div class="w-12 h-12 bg-white rounded-xl border border-brandDark flex items-center justify-center">🎯</div>
+                            </div>
+
+                            <div class="bg-brandGreen p-5 rounded-2xl border border-brandDark flex justify-between items-center">
+                                <div>
+                                    <h4>Social Media Marketing</h4>
+                                    <span class="text-[10px] font-normal text-brandDark block mt-1">Learn more ↗</span>
+                                </div>
+                                <div class="w-12 h-12 bg-white rounded-xl border border-brandDark flex items-center justify-center">📱</div>
+                            </div>
+
+                            <div class="bg-brandGray p-5 rounded-2xl border border-brandDark flex justify-between items-center">
+                                <div>
+                                    <h4>Email Marketing</h4>
+                                    <span class="text-[10px] font-normal text-gray-500 block mt-1">Learn more ↗</span>
+                                </div>
+                                <div class="w-12 h-12 bg-white rounded-xl border border-brandDark flex items-center justify-center">✉️</div>
+                            </div>
+
+                            <div class="bg-brandGray p-5 rounded-2xl border border-brandDark flex justify-between items-center">
+                                <div>
+                                    <h4>Content Creation</h4>
+                                    <span class="text-[10px] font-normal text-gray-500 block mt-1">Learn more ↗</span>
+                                </div>
+                                <div class="w-12 h-12 bg-white rounded-xl border border-brandDark flex items-center justify-center">✍️</div>
+                            </div>
+
+                            <div class="bg-brandGray p-5 rounded-2xl border border-brandDark flex justify-between items-center">
+                                <div>
+                                    <h4>Analytics and Tracking</h4>
+                                    <span class="text-[10px] font-normal text-gray-500 block mt-1">Learn more ↗</span>
+                                </div>
+                                <div class="w-12 h-12 bg-white rounded-xl border border-brandDark flex items-center justify-center">📊</div>
+                            </div>
+
+                            <div class="bg-brandGray p-5 rounded-2xl border border-brandDark flex justify-between items-center">
+                                <div>
+                                    <h4>Search Engine Optimization</h4>
+                                    <span class="text-[10px] font-normal text-gray-500 block mt-1">Learn more ↗</span>
+                                </div>
+                                <div class="w-12 h-12 bg-white rounded-xl border border-brandDark flex items-center justify-center">🔍</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. READY TO ELEVATE CTA BANNER -->
+                    <div class="bg-brandGray p-8 rounded-3xl border border-brandDark grid grid-cols-2 gap-6 items-center">
+                        <div class="space-y-4">
+                            <h3 class="font-bold text-xl">Ready to Elevate Your Search Rankings?</h3>
+                            <p class="text-xs text-gray-600 leading-relaxed">Contact us today to speak with an SEO expert and receive a custom strategy tailored for your business.</p>
+                            <button class="w-full bg-brandGreen text-brandDark py-3 rounded-xl font-bold border border-brandDark text-xs">Get Your Free Consultation</button>
+                        </div>
+                        <div class="h-40 bg-white rounded-2xl border border-brandDark flex items-center justify-center font-bold text-xs">
+                            [Illustration]
+                        </div>
+                    </div>
+
+
+                    <!-- 7. FOOTER SECTION -->
+                    <div class="bg-brandDark text-white p-6 rounded-3xl space-y-4 text-xs">
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-4">
+                            <span class="font-bold text-base tracking-tight">★ Positivus</span>
+                            <div class="flex gap-4 text-[10px] text-gray-400">
+                                <span>About us</span><span>Services</span><span>Use Cases</span><span>Pricing</span><span>Blog</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-[10px]">
+                            <div>
+                                <span class="bg-brandGreen text-brandDark px-2 py-0.5 rounded font-bold">Contact us:</span>
+                                <p class="text-gray-300 mt-2">Email: info@positivus.com</p>
+                                <p class="text-gray-300">Phone: 555-567-8901</p>
+                            </div>
+                            <div class="bg-[#292A32] p-4 rounded-xl space-y-2">
+                                <input type="email" placeholder="Email" class="w-full p-2 rounded bg-transparent border border-gray-600 text-[10px] text-white">
+                                <button class="w-full bg-brandGreen text-brandDark py-1.5 text-xs rounded font-bold">Subscribe to news</button>
+                            </div>
+                        </div>
+                        <hr class="border-gray-700">
+                        <p class="text-[9px] text-gray-500 text-center">© 2026 Positivus. All Rights Reserved.</p>
+                    </div>
+
+                </div>
+                <!-- WRAPPER WITH TOP TITLE & FRAME: SERVICES MOB -->
+                <div class="flex flex-col gap-2 shrink-0">
+
+                    <!-- TOP FRAME TITLE (Figma Green Header) -->
+                    <div class="text-sm font-bold text-brandGreen font-mono pl-1">
+                        Services mob
+                    </div>
+
+                    <!-- FRAME: SERVICES MOB (Exact Size: 400 × 8100 px Ratio) -->
+                    <div id="frame-services-mob" onclick="selectLayer('frame-services-mob')" class="figma-frame w-[400px] p-5 cursor-pointer space-y-6 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                        <!-- FRAME HEADER LAYER INFO -->
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <div class="text-xs font-bold text-gray-400">Frame: Services mob</div>
+                            <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">400 × 8100 px</span>
+                        </div>
+
+                        <!-- 1. HERO SECTION (MOBILE) -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <span class="font-bold text-base tracking-tight flex items-center gap-1">
+                    <span class="bg-brandDark text-white p-0.5 rounded text-[10px]">★</span> Positivus
+                                </span>
+                                <span class="text-lg cursor-pointer">☰</span>
+                            </div>
+                            <div class="space-y-3 pt-1">
+                                <h1 class="text-2xl font-bold leading-tight">Expert Digital Marketing Services</h1>
+                                <div class="h-44 bg-brandGreen rounded-2xl border border-brandDark flex items-center justify-center font-bold text-xs text-brandDark">
+                                    [Services Mobile Graphic]
+                                </div>
+                                <p class="text-xs text-gray-600 leading-relaxed">At our digital marketing agency, we offer a range of services to help businesses grow and succeed online.</p>
+                            </div>
+                            <button class="w-full bg-brandDark text-white py-2.5 text-xs rounded-xl font-medium">Book a consultation</button>
+                        </div>
+
+                        <!-- 2. FEATURED SEO BANNER (DARK CARD) -->
+                        <div class="bg-brandDark text-white p-5 rounded-3xl border border-brandDark space-y-3">
+                            <div class="flex items-center gap-1 text-[10px] text-brandGreen font-bold">
+                                <span>▼</span> FEATURED
+                            </div>
+                            <h3 class="font-bold text-base text-brandGreen">Search Engine Optimization</h3>
+                            <p class="text-[10px] text-gray-300 leading-relaxed">SEO is the process of improving your website's visibility on search engines to drive organic traffic and qualified leads.</p>
+                            <button class="w-full bg-white text-brandDark py-2 rounded-xl text-xs font-bold border border-brandDark">
+                Get Started
+            </button>
+                        </div>
+
+                        <!-- 3. HOW WE WORK: SEO PROCESS (01 - 06 MOBILE STACK) -->
+                        <div class="space-y-4 pt-2">
+                            <div>
+                                <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">How We Work: SEO Process</span>
+                                <p class="text-[10px] text-gray-500 mt-1">Our step-by-step approach to building your search presence.</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <!-- STEP 01 -->
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex items-center gap-3">
+                                    <span class="text-sm font-bold bg-brandGreen w-8 h-8 rounded-xl flex items-center justify-center border border-brandDark shrink-0">01</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs">Website Audit & Analysis</h4>
+                                        <p class="text-[10px] text-gray-600">Analyzing technical SEO and performance.</p>
+                                    </div>
+                                </div>
+
+                                <!-- STEP 02 -->
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex items-center gap-3">
+                                    <span class="text-sm font-bold bg-brandGreen w-8 h-8 rounded-xl flex items-center justify-center border border-brandDark shrink-0">02</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs">Keyword Research & Strategy</h4>
+                                        <p class="text-[10px] text-gray-600">Identifying high-intent search terms.</p>
+                                    </div>
+                                </div>
+
+                                <!-- STEP 03 -->
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex items-center gap-3">
+                                    <span class="text-sm font-bold bg-brandGreen w-8 h-8 rounded-xl flex items-center justify-center border border-brandDark shrink-0">03</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs">On-Page Optimization</h4>
+                                        <p class="text-[10px] text-gray-600">Optimizing meta tags and content structure.</p>
+                                    </div>
+                                </div>
+
+                                <!-- STEP 04 -->
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex items-center gap-3">
+                                    <span class="text-sm font-bold bg-brandGreen w-8 h-8 rounded-xl flex items-center justify-center border border-brandDark shrink-0">04</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs">Content Creation</h4>
+                                        <p class="text-[10px] text-gray-600">Creating high-converting search content.</p>
+                                    </div>
+                                </div>
+
+                                <!-- STEP 05 -->
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex items-center gap-3">
+                                    <span class="text-sm font-bold bg-brandGreen w-8 h-8 rounded-xl flex items-center justify-center border border-brandDark shrink-0">05</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs">Link Building</h4>
+                                        <p class="text-[10px] text-gray-600">Acquiring high-authority backlinks.</p>
+                                    </div>
+                                </div>
+
+                                <!-- STEP 06 -->
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex items-center gap-3">
+                                    <span class="text-sm font-bold bg-brandGreen w-8 h-8 rounded-xl flex items-center justify-center border border-brandDark shrink-0">06</span>
+                                    <div>
+                                        <h4 class="font-bold text-xs">Monitoring & Reporting</h4>
+                                        <p class="text-[10px] text-gray-600">Tracking rankings with transparent reports.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. USE CASES (FEATURED CARD) -->
+                        <div class="space-y-3 pt-2">
+                            <div>
+                                <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Use Cases</span>
+                            </div>
+
+                            <div class="bg-brandDark text-white p-5 rounded-3xl border border-brandDark space-y-3">
+                                <h4 class="font-bold text-xs text-brandGreen">E-commerce Fashion Brand</h4>
+                                <p class="text-[10px] text-gray-300 leading-relaxed">Achieved 200% increase in organic traffic and 150% boost in online sales within 6 months.</p>
+                                <a href="#" class="text-brandGreen text-[10px] font-bold flex items-center gap-1">Learn more ↗</a>
+                            </div>
+                        </div>
+
+                        <!-- 5. OUR OTHER SERVICES (VERTICAL STACK) -->
+                        <div class="space-y-4 pt-2">
+                            <div>
+                                <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Our Other Services</span>
+                                <p class="text-[10px] text-gray-500 mt-1">Explore our full suite of digital solutions.</p>
+                            </div>
+
+                            <div class="space-y-3 text-xs font-bold">
+                                <!-- CARD 1 -->
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark space-y-3">
+                                    <h4>Pay-per-click advertising</h4>
+                                    <div class="h-24 bg-white rounded-xl border border-brandDark flex items-center justify-center text-xl">🎯</div>
+                                    <a href="#" class="text-[10px] text-brandDark flex items-center gap-1 font-bold pt-1">
+                                        <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Learn more
+                                    </a>
+                                </div>
+
+                                <!-- CARD 2 -->
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark space-y-3">
+                                    <h4>Social Media Marketing</h4>
+                                    <div class="h-24 bg-white rounded-xl border border-brandDark flex items-center justify-center text-xl">📱</div>
+                                    <a href="#" class="text-[10px] text-brandDark flex items-center gap-1 font-bold pt-1">
+                                        <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Learn more
+                                    </a>
+                                </div>
+
+                                <!-- CARD 3 -->
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark space-y-3">
+                                    <h4>Email Marketing</h4>
+                                    <div class="h-24 bg-white rounded-xl border border-brandDark flex items-center justify-center text-xl">✉️</div>
+                                    <a href="#" class="text-[10px] text-brandDark flex items-center gap-1 font-bold pt-1">
+                                        <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Learn more
+                                    </a>
+                                </div>
+
+                                <!-- CARD 4 -->
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark space-y-3">
+                                    <h4>Content Creation</h4>
+                                    <div class="h-24 bg-white rounded-xl border border-brandDark flex items-center justify-center text-xl">✍️</div>
+                                    <a href="#" class="text-[10px] text-brandDark flex items-center gap-1 font-bold pt-1">
+                                        <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Learn more
+                                    </a>
+                                </div>
+
+                                <!-- CARD 5 -->
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark space-y-3">
+                                    <h4>Analytics and Tracking</h4>
+                                    <div class="h-24 bg-white rounded-xl border border-brandDark flex items-center justify-center text-xl">📊</div>
+                                    <a href="#" class="text-[10px] text-brandDark flex items-center gap-1 font-bold pt-1">
+                                        <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Learn more
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. READY TO ELEVATE CTA CARD -->
+                        <div class="bg-brandGray p-5 rounded-3xl border border-brandDark space-y-3 text-center">
+                            <h3 class="font-bold text-sm text-brandDark leading-snug">Ready to Elevate Your Search Rankings?</h3>
+                            <p class="text-[10px] text-gray-700 leading-relaxed">Contact us today to speak with an SEO expert and receive a custom strategy.</p>
+                            <div class="h-28 bg-white/60 rounded-xl flex items-center justify-center text-xs font-bold border border-brandDark">
+                                [Illustration]
+                            </div>
+                            <button class="w-full bg-brandGreen text-brandDark py-2 text-xs rounded-xl font-bold border border-brandDark">Get Free Consultation</button>
+                        </div>
+
+                        <!-- 7. FOOTER SECTION -->
+                        <div class="bg-brandDark text-white p-5 rounded-3xl space-y-4 text-center text-xs">
+                            <span class="font-bold text-base tracking-tight block text-left">★ Positivus</span>
+                            <div class="space-y-1 text-gray-400 text-[10px]">
+                                <p>About us</p>
+                                <p>Services</p>
+                                <p>Use Cases</p>
+                                <p>Pricing</p>
+                            </div>
+                            <div class="bg-[#292A32] p-3.5 rounded-xl space-y-2">
+                                <span class="bg-brandGreen text-brandDark text-[9px] font-bold px-2 py-0.5 rounded inline-block">Contact us:</span>
+                                <p class="text-[10px] text-gray-300">Email: info@positivus.com</p>
+                                <p class="text-[10px] text-gray-300">Phone: 555-567-8901</p>
+                                <input type="email" placeholder="Email" class="w-full p-2 rounded bg-transparent border border-gray-600 text-[10px] text-white mt-1">
+                                <button class="w-full bg-brandGreen text-brandDark py-1.5 text-xs rounded font-bold">Subscribe to news</button>
+                            </div>
+                            <div class="flex justify-center gap-3 text-sm">
+                                <span>🌐</span><span>📷</span><span>💼</span>
+                            </div>
+                            <hr class="border-gray-700">
+                            <p class="text-[9px] text-gray-500">© 2026 Positivus. All Rights Reserved.</p>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- WRAPPER WITH TOP TITLE & FRAME: PRICING -->
+                <div class="flex flex-col gap-2 shrink-0">
+
+                    <!-- TOP FRAME TITLE (Figma Green Header) -->
+                    <div class="text-sm font-bold text-brandGreen font-mono pl-1">
+                        Pricing
+                    </div>
+
+                    <!-- FRAME: PRICING (Exact Size: 1440 × 3477 px Ratio) -->
+                    <div id="frame-pricing" onclick="selectLayer('frame-pricing')" class="figma-frame w-[900px] p-8 cursor-pointer space-y-10 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                        <!-- FRAME HEADER LAYER INFO -->
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <div class="text-xs font-bold text-gray-400">Frame: Pricing</div>
+                            <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">1440 × 3477 px</span>
+                        </div>
+
+                        <!-- 1. TOP NAVBAR -->
+                        <div class="flex justify-between items-center border-b pb-4">
+                            <span class="font-bold text-xl tracking-tight flex items-center gap-2">
+                <span class="bg-brandDark text-white p-1 rounded text-xs">★</span> Positivus
+                            </span>
+                            <div class="flex gap-6 text-xs font-medium text-gray-600">
+                                <span>About us</span>
+                                <span>Services</span>
+                                <span>Use Cases</span>
+                                <span class="bg-brandGreen text-brandDark px-2 py-0.5 rounded font-bold">Pricing</span>
+                                <span>Blog</span>
+                            </div>
+                            <button class="border border-brandDark px-4 py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                        </div>
+
+                        <!-- 2. HERO TITLE SECTION -->
+                        <div class="space-y-2">
+                            <h1 class="text-3xl font-bold">Pricing</h1>
+                            <p class="text-xs text-gray-600">Simple & flexible pricing plans designed for your business growth.</p>
+                        </div>
+
+                        <!-- 3. PRICING CARDS (3-COLUMN GRID) -->
+                        <div class="grid grid-cols-3 gap-6 items-stretch">
+
+                            <!-- BASIC PLAN -->
+                            <div class="bg-white p-6 rounded-3xl border-2 border-brandDark space-y-6 flex flex-col justify-between">
+                                <div class="space-y-4">
+                                    <div class="space-y-1">
+                                        <span class="text-xs font-bold text-gray-500">Basic Plan</span>
+                                        <h3 class="text-2xl font-black">$500 <span class="text-xs font-normal text-gray-500">/month</span></h3>
+                                    </div>
+                                    <hr>
+                                    <ul class="space-y-2 text-[11px] text-gray-700">
+                                        <li class="flex items-center gap-2">✔ Website SEO Audit</li>
+                                        <li class="flex items-center gap-2">✔ Keyword Research (up to 50)</li>
+                                        <li class="flex items-center gap-2">✔ On-page optimization</li>
+                                        <li class="flex items-center gap-2">✔ Monthly reporting</li>
+                                        <li class="flex items-center gap-2">✔ Email support</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-2">
+                                    <button class="w-full bg-brandDark text-white py-2.5 rounded-xl text-xs font-bold">Get started</button>
+                                    <button class="w-full border border-brandDark py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                                </div>
+                            </div>
+
+                            <!-- PRO PLAN (DARK FEATURED CARD) -->
+                            <div class="bg-brandDark text-white p-6 rounded-3xl border-2 border-brandDark space-y-6 flex flex-col justify-between shadow-xl relative scale-105">
+                                <span class="absolute -top-3 right-6 bg-brandGreen text-brandDark text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-brandDark">Popular</span>
+                                <div class="space-y-4">
+                                    <div class="space-y-1">
+                                        <span class="text-xs font-bold text-gray-400">Pro Plan</span>
+                                        <h3 class="text-2xl font-black text-white">$1000 <span class="text-xs font-normal text-gray-400">/month</span></h3>
+                                    </div>
+                                    <hr class="border-gray-700">
+                                    <ul class="space-y-2 text-[11px] text-gray-300">
+                                        <li class="flex items-center gap-2">✔ Comprehensive SEO & Content Strategy</li>
+                                        <li class="flex items-center gap-2">✔ Unlimited keyword targeting</li>
+                                        <li class="flex items-center gap-2">✔ Link building & PR outreach</li>
+                                        <li class="flex items-center gap-2">✔ Weekly performance tracking</li>
+                                        <li class="flex items-center gap-2">✔ Dedicated account manager</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-2">
+                                    <button class="w-full bg-brandGreen text-brandDark py-2.5 rounded-xl text-xs font-bold">Book a call</button>
+                                    <button class="w-full bg-transparent border border-gray-600 text-white py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                                </div>
+                            </div>
+
+                            <!-- PLUS PLAN -->
+                            <div class="bg-white p-6 rounded-3xl border-2 border-brandDark space-y-6 flex flex-col justify-between">
+                                <div class="space-y-4">
+                                    <div class="space-y-1">
+                                        <span class="text-xs font-bold text-gray-500">Plus Plan</span>
+                                        <h3 class="text-2xl font-black">$3000 <span class="text-xs font-normal text-gray-500">/month</span></h3>
+                                    </div>
+                                    <hr>
+                                    <ul class="space-y-2 text-[11px] text-gray-700">
+                                        <li class="flex items-center gap-2">✔ Full-funnel digital marketing</li>
+                                        <li class="flex items-center gap-2">✔ PPC & Social Media ads management</li>
+                                        <li class="flex items-center gap-2">✔ Enterprise-level SEO campaigns</li>
+                                        <li class="flex items-center gap-2">✔ Custom dashboard & analytics</li>
+                                        <li class="flex items-center gap-2">✔ 24/7 Priority support team</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-2">
+                                    <button class="w-full bg-brandDark text-white py-2.5 rounded-xl text-xs font-bold">Get started</button>
+                                    <button class="w-full border border-brandDark py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 4. FREQUENTLY ASKED QUESTIONS (FAQ ACCORDIONS) -->
+                        <div class="space-y-4 pt-6">
+                            <div>
+                                <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Frequently Asked Questions</span>
+                            </div>
+
+                            <div class="space-y-3 text-xs font-bold">
+                                <!-- ACTIVE FAQ ITEM (GREEN) -->
+                                <div class="bg-brandGreen p-5 rounded-2xl border-2 border-brandDark space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <h4>Can there any add-based human changes and fixing required?</h4>
+                                        <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-brandDark">−</span>
+                                    </div>
+                                    <p class="text-[10px] font-normal text-gray-800 leading-relaxed pt-1">
+                                        Yes, our team ensures continuous optimization and manual fixes whenever platform algorithms or code-base requirements change to maintain top performance results.
+                                    </p>
+                                </div>
+
+                                <!-- CLOSED FAQ ITEMS -->
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700">
+                                    <span>Consultation process overview & pricing details?</span>
+                                    <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-brandDark">+</span>
+                                </div>
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700">
+                                    <span>Do you offer a free trial or consultation call?</span>
+                                    <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-brandDark">+</span>
+                                </div>
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700">
+                                    <span>How can you adjust the timeline for volume work?</span>
+                                    <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-brandDark">+</span>
+                                </div>
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700">
+                                    <span>Are you open to long-term multi-location contracts?</span>
+                                    <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-brandDark">+</span>
+                                </div>
+                                <div class="bg-brandGray p-4 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700">
+                                    <span>Do you offer student discounts or monthly partnership pricing?</span>
+                                    <span class="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-brandDark">+</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. FOOTER SECTION -->
+                        <div class="bg-brandDark text-white p-8 rounded-3xl space-y-6 text-xs">
+                            <div class="flex justify-between items-center border-b border-gray-700 pb-6">
+                                <span class="font-bold text-base tracking-tight">★ Positivus</span>
+                                <div class="flex gap-6 text-xs text-gray-400">
+                                    <span>About us</span>
+                                    <span>Services</span>
+                                    <span>Use Cases</span>
+                                    <span>Pricing</span>
+                                    <span>Blog</span>
+                                </div>
+                                <div class="flex gap-3">
+                                    <span>🌐</span><span>📷</span><span>💼</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6 text-xs">
+                                <div>
+                                    <span class="bg-brandGreen text-brandDark px-2.5 py-1 rounded font-bold inline-block mb-3">Contact us:</span>
+                                    <p class="text-gray-300">Email: info@positivus.com</p>
+                                    <p class="text-gray-300 mt-1">Phone: 555-567-8901</p>
+                                    <p class="text-gray-300 mt-1">Address: 1234 Main St, Moonstone City</p>
+                                </div>
+                                <div class="bg-[#292A32] p-5 rounded-2xl flex items-center gap-3">
+                                    <input type="email" placeholder="Email" class="w-full p-3 rounded-xl bg-transparent border border-gray-600 text-xs text-white">
+                                    <button class="bg-brandGreen text-brandDark font-bold px-6 py-3 rounded-xl text-xs shrink-0">Subscribe</button>
+                                </div>
+                            </div>
+
+                            <hr class="border-gray-700">
+                            <p class="text-[10px] text-gray-500 text-center">© 2026 Positivus. All Rights Reserved.</p>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- WRAPPER WITH TOP TITLE & FRAME: PRICING MOB -->
+                <div class="flex flex-col gap-2 shrink-0">
+
+                    <!-- TOP FRAME TITLE (Figma Green Header) -->
+                    <div class="text-sm font-bold text-brandGreen font-mono pl-1">
+                        Pricing mob
+                    </div>
+
+                    <!-- FRAME: PRICING MOB (Exact Size: 430 × 4773 px Ratio) -->
+                    <div id="frame-pricing-mob" onclick="selectLayer('frame-pricing-mob')" class="figma-frame w-[400px] p-5 cursor-pointer space-y-6 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                        <!-- FRAME HEADER LAYER INFO -->
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <div class="text-xs font-bold text-gray-400">Frame: Pricing mob</div>
+                            <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">430 × 4773 px</span>
+                        </div>
+
+                        <!-- 1. TOP NAVBAR / HEADER -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center border-b pb-3">
+                                <span class="font-bold text-base tracking-tight flex items-center gap-1">
+                    <span class="bg-brandDark text-white p-0.5 rounded text-[10px]">★</span> Positivus
+                                </span>
+                                <span class="text-lg cursor-pointer">☰</span>
+                            </div>
+                            <div class="space-y-1">
+                                <h1 class="text-2xl font-bold leading-tight">Pricing</h1>
+                                <p class="text-xs text-gray-600">Simple & flexible pricing plans for your business.</p>
+                            </div>
+                        </div>
+
+                        <!-- 2. PRICING CARDS STACK (MOBILE) -->
+                        <div class="space-y-4">
+
+                            <!-- BASIC PLAN -->
+                            <div class="bg-white p-5 rounded-3xl border-2 border-brandDark space-y-4">
+                                <div class="space-y-1">
+                                    <span class="text-xs font-bold text-gray-500">Basic Plan</span>
+                                    <h3 class="text-2xl font-black">$500 <span class="text-[10px] font-normal text-gray-500">/month</span></h3>
+                                </div>
+                                <hr>
+                                <ul class="space-y-2 text-[10px] text-gray-700">
+                                    <li class="flex items-center gap-2">✔ Website SEO Audit</li>
+                                    <li class="flex items-center gap-2">✔ Keyword Research (up to 50)</li>
+                                    <li class="flex items-center gap-2">✔ On-page optimization</li>
+                                    <li class="flex items-center gap-2">✔ Monthly reporting</li>
+                                </ul>
+                                <div class="space-y-2 pt-2">
+                                    <button class="w-full bg-brandDark text-white py-2.5 rounded-xl text-xs font-bold">Get started</button>
+                                    <button class="w-full border border-brandDark py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                                </div>
+                            </div>
+
+                            <!-- PRO PLAN (DARK FEATURED CARD) -->
+                            <div class="bg-brandDark text-white p-5 rounded-3xl border-2 border-brandDark space-y-4 relative">
+                                <span class="absolute -top-3 right-5 bg-brandGreen text-brandDark text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase border border-brandDark">Popular</span>
+                                <div class="space-y-1">
+                                    <span class="text-xs font-bold text-gray-400">Pro Plan</span>
+                                    <h3 class="text-2xl font-black text-white">$1000 <span class="text-[10px] font-normal text-gray-400">/month</span></h3>
+                                </div>
+                                <hr class="border-gray-700">
+                                <ul class="space-y-2 text-[10px] text-gray-300">
+                                    <li class="flex items-center gap-2">✔ Comprehensive SEO & Content Strategy</li>
+                                    <li class="flex items-center gap-2">✔ Unlimited keyword targeting</li>
+                                    <li class="flex items-center gap-2">✔ Link building & PR outreach</li>
+                                    <li class="flex items-center gap-2">✔ Weekly performance tracking</li>
+                                </ul>
+                                <div class="space-y-2 pt-2">
+                                    <button class="w-full bg-brandGreen text-brandDark py-2.5 rounded-xl text-xs font-bold">Book a call</button>
+                                    <button class="w-full bg-transparent border border-gray-600 text-white py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                                </div>
+                            </div>
+
+                            <!-- PLUS PLAN -->
+                            <div class="bg-white p-5 rounded-3xl border-2 border-brandDark space-y-4">
+                                <div class="space-y-1">
+                                    <span class="text-xs font-bold text-gray-500">Plus Plan</span>
+                                    <h3 class="text-2xl font-black">$3000 <span class="text-[10px] font-normal text-gray-500">/month</span></h3>
+                                </div>
+                                <hr>
+                                <ul class="space-y-2 text-[10px] text-gray-700">
+                                    <li class="flex items-center gap-2">✔ Full-funnel digital marketing</li>
+                                    <li class="flex items-center gap-2">✔ PPC & Social Media ads management</li>
+                                    <li class="flex items-center gap-2">✔ Enterprise-level SEO campaigns</li>
+                                    <li class="flex items-center gap-2">✔ Custom dashboard & analytics</li>
+                                </ul>
+                                <div class="space-y-2 pt-2">
+                                    <button class="w-full bg-brandDark text-white py-2.5 rounded-xl text-xs font-bold">Get started</button>
+                                    <button class="w-full border border-brandDark py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 3. FREQUENTLY ASKED QUESTIONS (ACCORDIONS) -->
+                        <div class="space-y-3 pt-2">
+                            <div>
+                                <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Frequently Asked Questions</span>
+                            </div>
+
+                            <div class="space-y-2 text-xs font-bold">
+                                <!-- ACTIVE FAQ ITEM -->
+                                <div class="bg-brandGreen p-4 rounded-2xl border-2 border-brandDark space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <h4 class="text-[11px]">Can there any add-based human changes and fixing required?</h4>
+                                        <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark shrink-0">−</span>
+                                    </div>
+                                    <p class="text-[9px] font-normal text-gray-800 leading-relaxed">
+                                        Yes, our team ensures continuous optimization and manual fixes whenever platform algorithms change.
+                                    </p>
+                                </div>
+
+                                <!-- CLOSED FAQ ITEMS -->
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700 text-[11px]">
+                                    <span>Consultation process overview & pricing details?</span>
+                                    <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark shrink-0">+</span>
+                                </div>
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700 text-[11px]">
+                                    <span>Do you offer a free trial or consultation call?</span>
+                                    <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark shrink-0">+</span>
+                                </div>
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700 text-[11px]">
+                                    <span>How can you adjust the timeline for volume work?</span>
+                                    <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark shrink-0">+</span>
+                                </div>
+                                <div class="bg-brandGray p-3.5 rounded-2xl border border-brandDark flex justify-between items-center text-gray-700 text-[11px]">
+                                    <span>Are you open to long-term multi-location contracts?</span>
+                                    <span class="w-5 h-5 rounded-full bg-white flex items-center justify-center text-xs border border-brandDark shrink-0">+</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. FOOTER SECTION -->
+                        <div class="bg-brandDark text-white p-5 rounded-3xl space-y-4 text-center text-xs">
+                            <span class="font-bold text-base tracking-tight block text-left">★ Positivus</span>
+                            <div class="space-y-1 text-gray-400 text-[10px]">
+                                <p>About us</p>
+                                <p>Services</p>
+                                <p>Use Cases</p>
+                                <p>Pricing</p>
+                            </div>
+                            <div class="bg-[#292A32] p-3.5 rounded-xl space-y-2">
+                                <span class="bg-brandGreen text-brandDark text-[9px] font-bold px-2 py-0.5 rounded inline-block">Contact us:</span>
+                                <p class="text-[10px] text-gray-300">Email: info@positivus.com</p>
+                                <p class="text-[10px] text-gray-300">Phone: 555-567-8901</p>
+                                <input type="email" placeholder="Email" class="w-full p-2 rounded bg-transparent border border-gray-600 text-[10px] text-white mt-1">
+                                <button class="w-full bg-brandGreen text-brandDark py-1.5 text-xs rounded font-bold">Subscribe</button>
+                            </div>
+                            <div class="flex justify-center gap-3 text-sm">
+                                <span>🌐</span><span>📷</span><span>💼</span>
+                            </div>
+                            <hr class="border-gray-700">
+                            <p class="text-[9px] text-gray-500">© 2026 Positivus. All Rights Reserved.</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- WRAPPER WITH TOP TITLE & FRAME: BLOG -->
+            <div class="flex flex-col gap-2 shrink-0">
+
+                <!-- TOP FRAME TITLE (Figma Green Header) -->
+                <div class="text-sm font-bold text-brandGreen font-mono pl-1">
+                    Blog
+                </div>
+
+                <!-- FRAME: BLOG (Exact Size: 1440 × 6200 px Ratio) -->
+                <div id="frame-blog" onclick="selectLayer('frame-blog')" class="figma-frame w-[900px] p-8 cursor-pointer space-y-10 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                    <!-- FRAME HEADER LAYER INFO -->
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div class="text-xs font-bold text-gray-400">Frame: Blog</div>
+                        <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">1440 × 6200 px</span>
+                    </div>
+
+                    <!-- 1. TOP NAVBAR -->
+                    <div class="flex justify-between items-center border-b pb-4">
+                        <span class="font-bold text-xl tracking-tight flex items-center gap-2">
+                <span class="bg-brandDark text-white p-1 rounded text-xs">★</span> Positivus
+                        </span>
+                        <div class="flex gap-6 text-xs font-medium text-gray-600">
+                            <span>About us</span>
+                            <span>Services</span>
+                            <span>Use Cases</span>
+                            <span>Pricing</span>
+                            <span class="bg-brandGreen text-brandDark px-2 py-0.5 rounded font-bold">Blog</span>
+                        </div>
+                        <button class="border border-brandDark px-4 py-2 rounded-xl text-xs font-bold">Request a quote</button>
+                    </div>
+
+
+                    <!-- 2. HERO FEATURED ARTICLE BANNER -->
+                    <div class="bg-brandGray p-8 rounded-3xl border border-brandDark grid grid-cols-12 gap-8 items-center">
+                        <div class="col-span-5 h-44 bg-brandGreen rounded-2xl border border-brandDark flex items-center justify-center font-bold text-xs text-brandDark">
+                            [Blog Hero Graphic]
+                        </div>
+                        <div class="col-span-7 space-y-3">
+                            <span class="text-[10px] text-gray-500 font-semibold">Featured Article</span>
+                            <h1 class="text-2xl font-bold leading-tight text-brandDark">PPC vs Organic Marketing: Which One is Right for Your Business?</h1>
+                            <p class="text-xs text-gray-600 leading-relaxed">Understanding the differences between paid search and organic search strategies can help you make better decisions for your marketing budget and ROI.</p>
+                        </div>
+                    </div>
+
+
+                    <!-- 3. AUTHOR BAR -->
+                    <div class="flex justify-between items-center border-y py-3 text-xs">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-brandGreen flex items-center justify-center font-bold text-brandDark text-xs">JS</div>
+                            <div>
+                                <h4 class="font-bold text-xs">John Smith</h4>
+                                <p class="text-[10px] text-gray-500">CEO & Founder • 5 min read</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 text-gray-400 text-sm">
+                            <span>🔗</span><span>💼</span><span>🐦</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. MAIN ARTICLE CONTENT BODY -->
+                    <div class="max-w-2xl mx-auto space-y-6 text-xs text-gray-700 leading-relaxed font-normal">
+                        <p>
+                            In the ever-evolving digital marketing landscape, business owners are constantly faced with a crucial decision: should they invest in pay-per-click (PPC) search engine marketing, organic search engine optimization (SEO), or both? Each strategy presents
+                            its own advantages and challenges depending on your business goals.
+                        </p>
+
+                        <h2 class="text-base font-bold text-brandDark">The Challenge of Standing Out Online</h2>
+                        <p>
+                            With millions of websites competing for visibility on Google, securing a prominent position requires a strategic roadmap. Organic search relies on content authority and technical setup, while PPC delivers instantaneous visibility at a cost.
+                        </p>
+
+                        <h2 class="text-base font-bold text-brandDark">Comparing PPC and Organic Marketing</h2>
+                        <p>
+                            PPC allows you to target users searching for specific terms instantly. On the other hand, organic marketing builds sustainable trust and long-term search engine authority that delivers compound interest over time.
+                        </p>
+
+                        <!-- CALLOUT / QUOTE BANNER -->
+                        <div class="border-l-4 border-brandGreen pl-4 py-2 bg-brandGray/40 rounded-r-xl italic text-gray-800 font-medium">
+                            "PPC and organic marketing aren't enemies; they're partners. The best marketing strategies combine immediate visibility with long-term authority."
+                        </div>
+
+                        <h2 class="text-base font-bold text-brandDark">Striking the Right Balance</h2>
+                        <p>
+                            A hybrid approach often yields the best performance. By using PPC to drive immediate leads while building organic rank in the background, companies can maximize market coverage and revenue potential.
+                        </p>
+
+                        <!-- STATS CARDS GRID IN ARTICLE -->
+                        <div class="grid grid-cols-2 gap-4 my-6">
+                            <div class="p-4 rounded-2xl border border-brandDark bg-white space-y-1">
+                                <h4 class="font-bold text-xs">Immediate Reach</h4>
+                                <p class="text-[10px] text-gray-500">PPC ads launch instantly for high-intent queries.</p>
+                            </div>
+                            <div class="p-4 rounded-2xl border border-brandDark bg-brandGreen text-brandDark space-y-1">
+                                <h4 class="font-bold text-xs">Sustainable Growth</h4>
+                                <p class="text-[10px] text-gray-800">Organic SEO builds long-term traffic value.</p>
+                            </div>
+                            <div class="p-4 rounded-2xl border border-brandDark bg-brandGray space-y-1">
+                                <h4 class="font-bold text-xs">High Conversion Rate</h4>
+                                <p class="text-[10px] text-gray-600">Targeted landing pages convert clicks into clients.</p>
+                            </div>
+                            <div class="p-4 rounded-2xl border border-brandDark bg-brandDark text-white space-y-1">
+                                <h4 class="font-bold text-xs text-brandGreen">Cost Efficiency</h4>
+                                <p class="text-[10px] text-gray-300">Blended CAC drops over time as organic scales.</p>
+                            </div>
+                        </div>
+
+                        <h2 class="text-base font-bold text-brandDark">Real-World Examples</h2>
+                        <p>
+                            Consider a local restaurant using PPC for weekend reservation surges while building an organic presence for local SEO terms like "best dinner near me". This combined approach ensures stability and growth.
+                        </p>
+
+                        <h2 class="text-base font-bold text-brandDark">Key Takeaways for Your Strategy</h2>
+                        <p>
+                            Evaluate your budget, timeframe, and goals before deciding. For quick wins, start with PPC. For compounding growth, invest heavily in high-quality content and technical SEO.
+                        </p>
+                    </div>
+
+                    <!-- 5. EXPLORE MORE ARTICLES (6-GRID CARDS) -->
+                    <div class="space-y-4 pt-6">
+                        <div>
+                            <span class="bg-brandGreen text-xs font-bold px-2.5 py-1 rounded border border-brandDark inline-block">Explore More Articles</span>
+                            <p class="text-[10px] text-gray-500 mt-1">Discover insights, strategies, and digital marketing news.</p>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 text-xs">
+                            <!-- CARD 1 -->
+                            <div class="p-4 border border-brandDark rounded-2xl bg-white space-y-2 flex flex-col justify-between">
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-xs">10 SEO Trends You Can't Ignore</h4>
+                                    <p class="text-[10px] text-gray-500">Stay ahead of algorithm updates with these strategies.</p>
+                                </div>
+                                <a href="#" class="text-brandDark font-bold text-[10px] flex items-center gap-1 pt-2">
+                                    <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Read article
+                                </a>
+                            </div>
+
+                            <!-- CARD 2 -->
+                            <div class="p-4 border border-brandDark rounded-2xl bg-white space-y-2 flex flex-col justify-between">
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-xs">Maximizing ROI with Social Ads</h4>
+                                    <p class="text-[10px] text-gray-500">Tips for optimizing paid campaigns across social media.</p>
+                                </div>
+                                <a href="#" class="text-brandDark font-bold text-[10px] flex items-center gap-1 pt-2">
+                                    <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Read article
+                                </a>
+                            </div>
+
+                            <!-- CARD 3 -->
+                            <div class="p-4 border border-brandDark rounded-2xl bg-white space-y-2 flex flex-col justify-between">
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-xs">Content Strategy That Converts</h4>
+                                    <p class="text-[10px] text-gray-500">How to create content that drives real business results.</p>
+                                </div>
+                                <a href="#" class="text-brandDark font-bold text-[10px] flex items-center gap-1 pt-2">
+                                    <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Read article
+                                </a>
+                            </div>
+
+                            <!-- CARD 4 -->
+                            <div class="p-4 border border-brandDark rounded-2xl bg-white space-y-2 flex flex-col justify-between">
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-xs">The Power of Email Marketing</h4>
+                                    <p class="text-[10px] text-gray-500">Nurture leads and increase customer retention.</p>
+                                </div>
+                                <a href="#" class="text-brandDark font-bold text-[10px] flex items-center gap-1 pt-2">
+                                    <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Read article
+                                </a>
+                            </div>
+
+                            <!-- CARD 5 -->
+                            <div class="p-4 border border-brandDark rounded-2xl bg-white space-y-2 flex flex-col justify-between">
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-xs">Understanding Google Analytics</h4>
+                                    <p class="text-[10px] text-gray-500">Key metrics every marketer should track.</p>
+                                </div>
+                                <a href="#" class="text-brandDark font-bold text-[10px] flex items-center gap-1 pt-2">
+                                    <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Read article
+                                </a>
+                            </div>
+
+                            <!-- CARD 6 -->
+                            <div class="p-4 border border-brandDark rounded-2xl bg-white space-y-2 flex flex-col justify-between">
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-xs">A Beginner's Guide to PPC</h4>
+                                    <p class="text-[10px] text-gray-500">Everything you need to know about paid search ads.</p>
+                                </div>
+                                <a href="#" class="text-brandDark font-bold text-[10px] flex items-center gap-1 pt-2">
+                                    <span class="w-4 h-4 bg-brandGreen rounded-full flex items-center justify-center text-[8px]">↗</span> Read article
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. FOOTER SECTION -->
+                    <div class="bg-brandDark text-white p-8 rounded-3xl space-y-6 text-xs">
+                        <div class="flex justify-between items-center border-b border-gray-700 pb-6">
+                            <span class="font-bold text-base tracking-tight">★ Positivus</span>
+                            <div class="flex gap-6 text-xs text-gray-400">
+                                <span>About us</span>
+                                <span>Services</span>
+                                <span>Use Cases</span>
+                                <span>Pricing</span>
+                                <span>Blog</span>
+                            </div>
+                            <div class="flex gap-3">
+                                <span>🌐</span><span>📷</span><span>💼</span>
+                            </div>
+                        </div>
+
+
+                        <div class="grid grid-cols-2 gap-6 text-xs">
+                            <div>
+                                <span class="bg-brandGreen text-brandDark px-2.5 py-1 rounded font-bold inline-block mb-3">Contact us:</span>
+                                <p class="text-gray-300">Email: info@positivus.com</p>
+                                <p class="text-gray-300 mt-1">Phone: 555-567-8901</p>
+                                <p class="text-gray-300 mt-1">Address: 1234 Main St, Moonstone City</p>
+                            </div>
+                            <div class="bg-[#292A32] p-5 rounded-2xl flex items-center gap-3">
+                                <input type="email" placeholder="Email" class="w-full p-3 rounded-xl bg-transparent border border-gray-600 text-xs text-white">
+                                <button class="bg-brandGreen text-brandDark font-bold px-6 py-3 rounded-xl text-xs shrink-0">Subscribe</button>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-700">
+                        <p class="text-[10px] text-gray-500 text-center">© 2026 Positivus. All Rights Reserved.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- COLUMN: BLOG MOB (Horizontal Right-Side Aligned) -->
+            <div class="flex flex-col gap-2 shrink-0">
+
+                <!-- TOP FRAME TITLE (Figma Green Header) -->
+                <div class="text-sm font-bold text-brandGreen font-mono pl-1">
+                    Blog mob
+                </div>
+
+                <!-- FRAME: BLOG MOB (Exact Size: 430 × 9730 px Ratio) -->
+                <div id="frame-blog-mob" onclick="selectLayer('frame-blog-mob')" class="figma-frame w-[400px] p-5 cursor-pointer space-y-6 bg-white shrink-0 border-2 border-gray-300 rounded-[28px] shadow-md font-sans">
+
+                    <!-- FRAME HEADER LAYER INFO -->
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div class="text-xs font-bold text-gray-400">Frame: Blog mob</div>
+                        <span class="text-[10px] bg-brandGreen text-brandDark px-2 py-0.5 rounded font-mono font-bold">430 × 9730 px</span>
+                    </div>
+
+                    <!-- 1. TOP NAVBAR / HEADER -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b pb-3">
+                            <span class="font-bold text-base tracking-tight flex items-center gap-1">
+                    <span class="bg-brandDark text-white p-0.5 rounded text-[10px]">★</span> Positivus
+                            </span>
+                            <span class="text-lg cursor-pointer">☰</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <span class="text-[9px] text-gray-500 font-semibold uppercase">Featured Article</span>
+                            <h1 class="text-xl font-bold leading-tight text-brandDark">PPC vs. Organic Marketing: Which One is Right for Your Business?</h1>
+                        </div>
+                    </div>
+
+                    <!-- 2. HERO GRAPHIC BANNER -->
+                    <div class="h-44 bg-brandGreen rounded-2xl border border-brandDark flex items-center justify-center font-bold text-xs text-brandDark">
+                        [Blog Hero Graphic]
+                    </div>
+
+                    <p class="text-[11px] text-gray-600 leading-relaxed">
+                        Understanding the differences between paid search and organic search strategies can help you make better decisions for your marketing budget and ROI.
+                    </p>
+
+                    <!-- 3. AUTHOR BAR -->
+                    <div class="flex justify-between items-center border-y py-2.5 text-xs">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-full bg-brandGreen flex items-center justify-center font-bold text-brandDark text-[10px]">JS</div>
+                            <div>
+                                <h4 class="font-bold text-[11px]">John Smith</h4>
+                                <p class="text-[9px] text-gray-500">CEO & Founder • 5 min read</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 text-gray-400 text-xs">
+                            <span>🔗</span><span>💼</span><span>🐦</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. ARTICLE CONTENT STACK -->
+                    <div class="space-y-4 text-[11px] text-gray-700 leading-relaxed font-normal">
+                        <p>
+                            In the ever-evolving digital marketing landscape, business owners are constantly faced with a crucial decision: should they invest in pay-per-click (PPC) search engine marketing, organic search engine optimization (SEO), or both?
+                        </p>
+
+                        <h2 class="text-sm font-bold text-brandDark">The Challenge of Standing Out Online</h2>
+                        <p>
+                            With millions of websites competing for visibility on Google, securing a prominent position requires a strategic roadmap.
+                        </p>
+
+                        <h2 class="text-sm font-bold text-brandDark">Comparing PPC and Organic Marketing</h2>
+                        <p>
+                            PPC allows you to target users searching for specific terms instantly. On the other hand, organic marketing builds sustainable trust.
+                        </p>
+
+                        <!-- CALLOUT BOX -->
+                        <div class="border-l-4 border-brandGreen pl-3 py-2 bg-brandGray/50 rounded-r-xl italic text-gray-800 text-[10px]">
+                            "PPC and organic marketing aren't enemies; they're partners."
+                        </div>
+
+                        <h2 class="text-sm font-bold text-brandDark">Striking the Right Balance</h2>
+                        <p>
+                            A hybrid approach often yields the best performance. By using PPC to drive immediate leads while building organic rank in the background, companies can maximize market coverage.
+                        </p>
+
+                        <!-- MOBILE STATS CARDS STACK -->
+                        <div class="space-y-2 pt-2">
+                            <div class="p-3 rounded-xl border border-brandDark bg-white space-y-0.5">
+                                <h4 class="font-bold text-[10px]">Immediate Reach</h4>
+                                <p class="text-[9px] text-gray-500">PPC ads launch instantly for high-intent queries.</p>
+                            </div>
+                            <div class="p-3 rounded-xl border border-brandDark bg-brandGreen text-brandDark space-y-0.5">
+                                <h4 class="font-bold text-[10px]">Sustainable Growth</h4>
+                                <p class="text-[9px] text-gray-800">Organic SEO builds long-term traffic value.</p>
+                            </div>
+                            <div class="p-3 rounded-xl border border-brandDark bg-brandGray space-y-0.5">
+                                <h4 class="font-bold text-[10px]">High Conversion Rate</h4>
+                                <p class="text-[9px] text-gray-600">Targeted landing pages convert clicks into clients.</p>
+                            </div>
+                            <div class="p-3 rounded-xl border border-brandDark bg-brandDark text-white space-y-0.5">
+                                <h4 class="font-bold text-[10px] text-brandGreen">Cost Efficiency</h4>
+                                <p class="text-[9px] text-gray-300">Blended CAC drops over time as organic scales.</p>
+                            </div>
+                        </div>
+
+                        <h2 class="text-sm font-bold text-brandDark">Real-World Examples</h2>
+                        <p>
+                            Consider a local restaurant using PPC for weekend reservation surges while building an organic presence for local terms.
+                        </p>
+
+                        <h2 class="text-sm font-bold text-brandDark">Key Takeaways for Your Strategy</h2>
+                        <p>
+                            Evaluate your budget, timeframe, and goals before deciding. For quick wins, start with PPC.
+                        </p>
+
+                        <h2 class="text-sm font-bold text-brandDark">Choosing the Best Strategy for Your Business</h2>
+                        <p>
+                            Align digital channels with sales goals to create compounding revenue over time.
+                        </p>
+                    </div>
+
+                    <!-- 5. MORE ARTICLES SECTION -->
+                    <div class="space-y-3 pt-4 border-t">
+                        <div>
+                            <span class="bg-brandGreen text-[11px] font-bold px-2 py-0.5 rounded border border-brandDark inline-block">Explore More Insights</span>
+                        </div>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 border border-brandDark rounded-xl bg-white space-y-1">
+                                <h4 class="font-bold text-[11px]">10 SEO Trends You Can't Ignore in 2026</h4>
+                                <p class="text-[9px] text-gray-500">Stay ahead of algorithm updates with these strategies.</p>
+                                <span class="text-brandDark font-bold text-[9px] flex items-center gap-1 pt-1">↗ Read article</span>
+                            </div>
+                            <div class="p-3 border border-brandDark rounded-xl bg-white space-y-1">
+                                <h4 class="font-bold text-[11px]">Maximizing ROI with Social Media Advertising</h4>
+                                <p class="text-[9px] text-gray-500">Tips for optimizing paid campaigns across social platforms.</p>
+                                <span class="text-brandDark font-bold text-[9px] flex items-center gap-1 pt-1">↗ Read article</span>
+                            </div>
+                            <div class="p-3 border border-brandDark rounded-xl bg-white space-y-1">
+                                <h4 class="font-bold text-[11px]">How to Build a Content Marketing Strategy</h4>
+                                <p class="text-[9px] text-gray-500">Create high-value content that drives real business results.</p>
+                                <span class="text-brandDark font-bold text-[9px] flex items-center gap-1 pt-1">↗ Read article</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. FOOTER SECTION -->
+                    <div class="bg-brandDark text-white p-5 rounded-3xl space-y-4 text-center text-xs">
+                        <span class="font-bold text-base tracking-tight block text-left">★ Positivus</span>
+                        <div class="space-y-1 text-gray-400 text-[10px]">
+                            <p>About us</p>
+                            <p>Services</p>
+                            <p>Use Cases</p>
+                            <p>Pricing</p>
+                        </div>
+                        <div class="bg-[#292A32] p-3.5 rounded-xl space-y-2">
+                            <span class="bg-brandGreen text-brandDark text-[9px] font-bold px-2 py-0.5 rounded inline-block">Contact us:</span>
+                            <p class="text-[10px] text-gray-300">Email: info@positivus.com</p>
+                            <input type="email" placeholder="Email" class="w-full p-2 rounded bg-transparent border border-gray-600 text-[10px] text-white mt-1">
+                            <button class="w-full bg-brandGreen text-brandDark py-1.5 text-xs rounded font-bold">Subscribe</button>
+                        </div>
+                        <div class="flex justify-center gap-3 text-sm">
+                            <span>🌐</span><span>📷</span><span>💼</span>
+                        </div>
+                        <hr class="border-gray-700">
+                        <p class="text-[9px] text-gray-500">© 2026 Positivus. All Rights Reserved.</p>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- SCRIPT FOR LAYER SELECTION -->
+    <script>
+        function selectLayer(frameId) {
+            document.querySelectorAll('.figma-frame').forEach(frame => {
+                frame.classList.remove('active-selection');
+            });
+            document.querySelectorAll('.layer-item').forEach(btn => {
+                btn.classList.remove('active-layer');
+            });
+
+            const targetFrame = document.getElementById(frameId);
+            if (targetFrame) {
+                targetFrame.classList.add('active-selection');
+                targetFrame.scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'center',
+                    block: 'nearest'
+                });
+            }
+
+            const targetBtn = document.getElementById('btn-' + frameId);
+            if (targetBtn) {
+                targetBtn.classList.add('active-layer');
+            }
+        }
+    </script>
+</body>
+
+</html>
